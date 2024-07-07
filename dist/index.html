@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link href="output.css" rel="stylesheet" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="mx-0 w-full px-8 font-sans">
+    <nav class="bg-white border-gray-20">
+      <div
+        class="w-full flex flex-wrap items-center justify-between mx-auto p-4"
+      >
+        <a
+          href="https://flowbite.com/"
+          class="flex items-center space-x-3 rtl:space-x-reverse"
+        >
+          <img
+            src="https://flowbite.com/docs/images/logo.svg"
+            class="h-8"
+            alt="Flowbite Logo"
+          />
+          <span class="self-center text-2xl font-semibold whitespace-nowrap"
+            >Flowbite</span
+          >
+        </a>
+        <div
+          class="flex items-left justify-left w-full md:flex md:w-auto md:order-1"
+          id="navbar-cta"
+        >
+          <ul
+            class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white text-sm"
+          >
+            <li>
+              <a
+                href="#"
+                class="block py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700"
+                aria-current="page"
+                >Home</a
+              >
+            </li>
+            <li>
+              <a
+                href="#"
+                class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700"
+                >About</a
+              >
+            </li>
+            <li>
+              <a
+                href="#"
+                class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700"
+                >Services</a
+              >
+            </li>
+            <li>
+              <a
+                href="#"
+                class="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700"
+                >Contact</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+          <button
+            type="button"
+            class="text-blue-700 bg-white border border-blue-700 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-white font-medium rounded-xl text-xs px-5 py-2 text-center mr-2"
+          >
+            Sign in
+          </button>
+          <button
+            type="button"
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl px-5 py-2 text-center text-xs"
+          >
+            Log in
+          </button>
+
+          <button
+            data-collapse-toggle="navbar-cta"
+            type="button"
+            class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+            aria-controls="navbar-cta"
+            aria-expanded="false"
+          >
+            <span class="sr-only">Open main menu</span>
+            <svg
+              class="w-5 h-5"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 17 14"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M1 1h15M1 7h15M1 13h15"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="relative block w-full h-96 mt-4">
+      <div class="relative w-full h-72 mt-4 z-0" data-carousel="slide">
+        <div
+          class="absolute inset-0 flex h-72 items-center justify-center bg-black bg-opacity-50 z-10 rounded-3xl"
+        >
+          <div class="text-center text-white">
+            <h1 class="text-4xl font-bold text-center text-white mb-0">
+              Book your stay with VSU
+            </h1>
+            <p class="text-lg text-white font-semibold mt-2">
+              Explore the beauty of VSU with our hotels that awaits you!
+            </p>
+          </div>
+        </div>
+
+        <div class="relative overflow-hidden rounded-3xl h-72 z-0">
+          <!-- Item 1 -->
+          <div class="hidden duration-1000 ease-in-out" data-carousel-item>
+            <img
+              src="/src/hotel-room.jpg"
+              class="w-full h-full object-cover rounded-3xl"
+              alt=""
+            />
+          </div>
+          <!-- Item 2 -->
+          <div
+            class="hidden duration-700 ease-in-out"
+            data-carousel-item="active"
+          >
+            <img
+              src="/src/hotel-room2.jpg"
+              class="absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+              alt=""
+            />
+          </div>
+          <!-- Item 3 -->
+          <div class="hidden duration-700 ease-in-out" data-carousel-item>
+            <img
+              src="/src/hotel-room3.jpg"
+              class="absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+              alt=""
+            />
+          </div>
+          <!-- Item 4 -->
+          <div class="hidden duration-700 ease-in-out" data-carousel-item>
+            <img
+              src="/src/hotel-room4.jpg"
+              class="absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+              alt=""
+            />
+          </div>
+          <!-- Item 5 -->
+          <div class="hidden duration-700 ease-in-out" data-carousel-item>
+            <img
+              src="/src/hotel-room5.jpg"
+              class="absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+              alt=""
+            />
+          </div>
+        </div>
+        <!-- Slider controls -->
+        <button
+          type="button"
+          class="absolute top-0 left-4 start-4 z-10 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+          data-carousel-prev
+        >
+          <span
+            class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none"
+          >
+            <svg
+              class="w-4 h-4 text-black rtl:rotate-180"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 6 10"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 1 1 5l4 4"
+              />
+            </svg>
+            <span class="sr-only">Previous</span>
+          </span>
+        </button>
+        <button
+          type="button"
+          class="absolute top-0 right-2 start-4 mr-9 z-10 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+          data-carousel-next
+        >
+          <span
+            class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none"
+          >
+            <svg
+              class="w-4 h-4 text-black rtl:rotate-180"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 6 10"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m1 9 4-4-4-4"
+              />
+            </svg>
+            <span class="sr-only text-black">Next</span>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute flex top-2/4 w-full h-16 mt-14 place-content-center justify-center align-center"
+      >
+        <div
+          class="relative block top-0 left-10  bg-white z-20 w-1/2 h-20 justify-center align-center place-content-center rounded-full"
+        >
+          <div class="overflow-x-auto"></div>
+            <table
+              class="w-auto text-sm text-left rtl:text-right text-gray-500 mt-4 ml-6 bg-transparent "
+            >
+              <thead class="text-sm text-gray-700 font-semibold bg-gray-50 uppercase">
+                <tr>
+                  <th scope="col" class="py-1 px-4 ">Accommodation</th>
+                  <th  scope="col" class="px-4 py-1">Details</th>
+                  <th  scope="col" class="px-4 py-1">Check-in</th>
+                  <th  scope="col" class="px-4 py-1">Check-out</th>
+                 
+                </tr>
+              </thead>
+              <tbody >
+                <tr class="bg-white text-sm font-light ">
+                  <td class="px-4 py-0 border-l-4 border-black">Which accommodation do you prefer?</td>
+                  <td class="px-4 py-0">Check Details</td>
+                  <td class="px-4 py-0">Add Date</td>
+                  <td class="px-4 py-0">Add Date</td>
+
+                </tr>
+                <button type="button" class="absolute z-30 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-3 text-left inline-flex items-end right-2 mt-3 me-2">
+                    <svg class="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                    </svg>
+                    <span class="sr-only">Icon description</span>
+                </button>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js"></script>
+  <script src="/node_modules/flowbite/dist/flowbite.min.js"></script>
+</html>
