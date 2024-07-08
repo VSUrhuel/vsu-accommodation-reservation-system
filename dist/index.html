@@ -109,7 +109,7 @@
       </div>
     </nav>
 
-    <div class="relative block w-full h-96 mt-4">
+    <div class="relative block w-full h-96 mt-4 p-0">
       <div class="relative w-full h-72 mt-4 z-0" data-carousel="slide">
         <div
           class="absolute inset-0 flex h-72 items-center justify-center bg-black bg-opacity-50 z-10 rounded-3xl"
@@ -224,14 +224,14 @@
         </button>
       </div>
       <div
-        class="absolute flex top-2/4 w-full h-16 mt-14 place-content-center justify-center align-center"
+        class="absolute flex top-2/4 w-full h-20 mt-14 place-content-center justify-center align-center"
       >
         <div
           class="relative block top-0 left-10  bg-white z-20 w-1/2 h-20 justify-center align-center place-content-center rounded-full"
         >
           <div class="overflow-x-auto"></div>
             <table
-              class="w-auto text-sm text-left rtl:text-right text-gray-500 mt-4 ml-6 bg-transparent "
+              class="w-auto text-sm text-left rtl:text-right text-gray-500 mt-4 ml-6 bg-transparent  md:block hidden"
             >
               <thead class="text-sm text-gray-700 font-semibold bg-gray-50 uppercase">
                 <tr>
@@ -250,7 +250,7 @@
                   <td class="px-4 py-0">Add Date</td>
 
                 </tr>
-                <button type="button" class="absolute z-30 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-3 text-left inline-flex items-end right-2 mt-3 me-2">
+                <button type="button" class="absolute z-30 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-3 text-left inline-flex justify-center items-end right-2 mt-3 me-2 md:block ">
                     <svg class="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
                     </svg>
@@ -260,9 +260,185 @@
             </table>
           </div>
         </div>
-        
+      </div>
+      <div>
+        <p class="flex self-center text-base font-medium mb-4 ml-2">Scenic Location</p>
+      </div>
+    
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-0">
+        <div class="grid gap-4">
+            <div class="relative">
+                <img class="h-36 w-96 max-w-full rounded-lg object-cover" src="/src/vsu-scenic-view/vsu1.jpg" alt="">
+                <p class="absolute flex text-black text-sm font-medium  bg-white/50 rounded-full p-2 px-5 mb-2 mr-2  bottom-0  right-0 justiyf-center item-center">VSU Admin</p>
+            </div>
+            <div class="relative">
+                <img class="h-36 w-96 max-w-full rounded-lg object-cover" src="/src/vsu-scenic-view//vsu3.jpg" alt="">
+                <p class="absolute flex text-black text-sm font-medium  bg-white/50 rounded-full p-2 px-5 mb-2 mr-2  bottom-0  right-0 justiyf-center item-center">VSU Beach</p>
+            </div>
+            
+        </div>
+        <div class="grid gap-4 items-center">
+            <div class="relative">
+                <img class="h-72 w-96 max-w-full rounded-lg object-cover" src="/src/vsu-scenic-view/vsu4.jpg" alt="">
+                <p class="absolute flex text-black text-sm font-medium  bg-white/50 rounded-full p-2 px-5 mt-2 mr-2  top-0  right-0 justiyf-center item-center">Search for Truth</p>
+            </div>
+           
+        </div>
+        <div class="grid gap-4">
+            <div class="relative">
+                <img class="h-36 w-96 max-w-full rounded-lg" src="/src/vsu-scenic-view/vsu5.jpg" alt="">
+                <p class="absolute flex text-black text-sm font-medium  bg-white/50 rounded-full p-2 px-5 mb-2 mr-2  bottom-0  right-0 justiyf-center item-center">Mt. Pangasugan</p>
+            </div>
+            <div class="relative">
+                <img class="h-36 w-96 max-w-full rounded-lg object-cover" src="/src/vsu-scenic-view/vsu6.jpg" alt="">
+                <p class="absolute flex text-black text-sm font-medium  bg-white/50 rounded-full p-2 px-5 mb-2 mr-2  bottom-0  right-0 justiyf-center item-center">Centennial Gate</p>
+            </div>
+            
+        </div>
+        <div class="grid gap-4 m-0 items-center mb">
+            <div class="relative">
+                <img class="h-72 max-w-full rounded-lg object-cover" src="/src/vsu-scenic-view/vsu2.jpg" alt="">
+                <p class="absolute flex text-black text-sm font-medium  bg-white/50 rounded-full p-2 px-5 mt-2 mr-2  top-0  right-0 justiyf-center item-center">VSU Lower Campus</p>
+            </div>
+        </div>
+      </div>
       </div>
     </div>
+    </div>
+
+    <div>
+      <p class="flex self-center text-base font-medium mb-4 ml-2 mt-10">Available Accommodations</p>
+    </div>
+    <div class="grid gap-4 grid-cols-2 md:grid-cols-4 ">
+      <div class="grid gap-4 items-center ">
+        <div  class=" border border-gray-200 object-cover rounded-lg shadow">
+          <div class="p-4">
+            <a href="#">
+              <img class="w-96 h-36 m-6 rounded-xl object-cover" src="/src/hotel-room.jpg" alt="product image" />
+            </a>
+        </div>
+        <div class="px-6 mx-7 pb-5">
+            <a href="#">
+                <h5 class="text-lg font-medium tracking-tight text-gray-900 ">Hostel</h5>
+                <p class="text-sm font-light tracking-tight text-gray-600 ">VSU Lower Campus</p>
+            </a>
+            
+            <div class="flex items-center justify-between mt-2">
+                <span class="text-sm font-bold text-gray-900 dark:text-white">from PHP 700/night</span>
+                <button>
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1"/>
+                  </svg>
+                </button>
+                
+            
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      <div class="grid gap-4 items-center ">
+        <div  class=" border border-gray-200 object-cover rounded-lg shadow">
+          <div class="p-4">
+            <a href="#">
+              <img class="w-96 h-36 m-6 rounded-xl object-cover" src="/src/hotel-room2.jpg" alt="product image" />
+            </a>
+          </div>
+          <div class="px-6 mx-7 pb-5">
+              <a href="#">
+                  <h5 class="text-lg font-medium tracking-tight text-gray-900 ">Apartelle</h5>
+                  <p class="text-sm font-light tracking-tight text-gray-600 ">VSU Lower Campus</p>
+              </a>
+              <div class="flex items-center justify-between mt-2">
+                  <span class="text-sm font-bold text-gray-900 ">from PHP 800/night</span>
+                  <button>
+                    <svg class="w-6 h-6 text-gray-800 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1"/>
+                    </svg>
+                  </button>
+              </div>
+            </div>
+        </div>
+      </div>
+      <div class="grid gap-4 items-center ">
+        <div  class=" border border-gray-200 object-cover rounded-lg shadow">
+          <div class="p-4">
+            <a href="#">
+              <img class="w-96 h-36 m-6 rounded-xl object-cover" src="/src/hotel-room3.jpg" alt="product image" />
+            </a>
+          </div>
+          <div class="px-6 mx-7 pb-5">
+              <a href="#">
+                  <h5 class="text-lg font-medium tracking-tight text-gray-900 ">Seafront Suite</h5>
+                  <p class="text-sm font-light tracking-tight text-gray-600 ">VSU Lower Campus</p>
+              </a>
+              <div class="flex items-center justify-between mt-2">
+                  <span class="text-sm font-bold text-gray-900 ">from PHP 800/night</span>
+                  <button>
+                    <svg class="w-6 h-6 text-gray-800 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1"/>
+                    </svg>
+                  </button>
+              </div>
+            </div>
+        </div>
+        
+      </div>
+      <div class="grid gap-4 items-center ">
+        <div  class=" border border-gray-200 object-cover rounded-lg shadow">
+          <div class="p-4">
+            <a href="#">
+              <img class="w-96 h-36 m-6 rounded-xl object-cover" src="/src/hotel-room4.jpg" alt="product image" />
+            </a>
+          </div>
+          <div class="px-6 mx-7 pb-5">
+              <a href="#">
+                  <h5 class="text-lg font-medium tracking-tight text-gray-900 ">Balay Alumni</h5>
+                  <p class="text-sm font-light tracking-tight text-gray-600 ">VSU Lower Campus</p>
+              </a>
+              <div class="flex items-center justify-between mt-2">
+                  <span class="text-sm font-bold text-gray-900 ">from PHP 800/night</span>
+                  <button>
+                    <svg class="w-6 h-6 text-gray-800 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1"/>
+                    </svg>
+                  </button>
+              </div>
+            </div>
+        </div>
+    </div>
+      
+    </div>
+    
+
+    <footer class="bg-white rounded-lg shadow ">
+      <div class="w-full mx-auto p-4 md:py-8">
+          <div class="sm:flex sm:items-center sm:justify-between">
+              <a href="https://flowbite.com/" class="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
+                  <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" />
+                  <span class="self-center text-2xl font-semibold whitespace-nowrap ">Flowbite</span>
+              </a>
+              <ul class="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 ">
+                  <li>
+                      <a href="#" class="hover:underline me-4 md:me-6">About</a>
+                  </li>
+                  <li>
+                      <a href="#" class="hover:underline me-4 md:me-6">Privacy Policy</a>
+                  </li>
+                  <li>
+                      <a href="#" class="hover:underline me-4 md:me-6">Licensing</a>
+                  </li>
+                  <li>
+                      <a href="#" class="hover:underline">Contact</a>
+                  </li>
+              </ul>
+          </div>
+          <hr class="my-6 border-gray-200 sm:mx-auto  lg:my-8" />
+          <span class="block text-sm text-gray-500 sm:text-center ">© 2023 <a href="https://flowbite.com/" class="hover:underline">Flowbite™</a>. All Rights Reserved.</span>
+      </div>
+    </footer>
+
+
   </body>
   <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js"></script>
   <script src="/node_modules/flowbite/dist/flowbite.min.js"></script>
