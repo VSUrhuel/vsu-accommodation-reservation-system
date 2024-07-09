@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function(){
     //document.getElementById('scenic-views').innerHTML = scenicViews.map(createScenicView).join('');
     document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
