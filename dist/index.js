@@ -1,3 +1,22 @@
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';  
+import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js';
+import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js';
+        // Your web app's Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyBYOi_Y3now8wDYR1SrqMkMDqdEh4VsZgI",
+    authDomain: "accommodation-reservatio-f8432.firebaseapp.com",
+    databaseURL: "https://accommodation-reservatio-f8432-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "accommodation-reservatio-f8432",
+    storageBucket: "accommodation-reservatio-f8432.appspot.com",
+    messagingSenderId: "841098874029",
+    appId: "1:841098874029:web:ec69d582bf4e16d69e4a24",
+    measurementId: "G-35LFVPDW3F"
+};
+
+        // Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app);
 
 document.addEventListener('DOMContentLoaded', function(){
     //document.getElementById('scenic-views').innerHTML = scenicViews.map(createScenicView).join('');
@@ -6,8 +25,8 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('carousel-items').innerHTML = carouselItems.map(createCarouselItem).join('');
     document.getElementById('table-content').innerHTML = tableContent.map(createTableRow).join('');
     
-    
     document.getElementById('signInBtn').addEventListener('click', signIn);
+    document.getElementById('logInBtn').addEventListener('click', logIn);
 })
 
 const navItems = [
@@ -111,8 +130,101 @@ function createAccommodation(accommodation) {
         </div>`;
 }
 
-function signIn(){
+function logIn() {
+    document.querySelector('#homePage').style.display = 'none';
+    document.querySelector('#logInForm').style.display = 'block';
+}
+
+function signIn() {
     document.querySelector('#signInForm').style.display = 'block';
     document.querySelector('#homePage').style.display = 'none';
-    console.log("fdf" + document.querySelector('#homePage').style.display)
+    var data = fetchLatestUserId();
+    document.querySelector('#createAccount').addEventListener('submit', createAccount);
+    
+    document.getElementById('googleSignIn').addEventListener('click', signInGoogle);
+}
+
+function signInGoogle() {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider).then((result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        console.log(user);
+    }).catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        alert(errorMessage);
+    });
+}
+async function createAccount(event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    const floating_email = document.querySelector('#floating_email').value;
+    const floating_password = document.querySelector('#floating_password').value;
+    const floating_repeat_password = document.querySelector('#floating_repeat_password').value;
+    const floating_first_name = document.querySelector('#floating_first_name').value;
+    const floating_last_name = document.querySelector('#floating_last_name').value;
+    const birthday_picker = document.querySelector('#birthday_picker').value;
+    const floating_phone = document.querySelector('#floating_phone').value;
+
+    if(floating_password != floating_repeat_password){
+        alert("password dint matched");
+        return;
+    }
+    try{
+        const newId = await fetchLatestUserId();
+        alert(newId);
+        const userCredential = await createUserWithEmailAndPassword(auth, floating_email, floating_password);
+        const user = userCredential.user;
+
+        await set(ref(database, `user/${newId}`), {
+            userId: newId,
+            email: floating_email,
+            password: floating_password,
+            firstName: floating_first_name,
+            lastName: floating_last_name,
+            birthday: birthday_picker,
+            phoneNumber: floating_phone
+
+        });
+        console.log('User created and additional data stored:', newId);
+        alert('Account created successfully!');
+    } catch (error) {
+        console.error('Error creating user:', error);
+        alert('Error creating account: ' + error.message);
+    }
+    
+}
+
+async function fetchLatestUserId() {
+    return new Promise((resolve, reject) => {
+        const userRef = ref(database, 'user');
+        onValue(userRef, (snapshot) => {
+            if (snapshot.exists()) {
+                let latestId = null;
+                snapshot.forEach((data) => {
+                    latestId = data.key;
+                });
+
+                if (latestId) {
+                    const prefix = latestId.slice(0, 3);
+                    const idNumber = parseInt(latestId.slice(3)) + 1;
+                    const newId = prefix + idNumber.toString().padStart(3, '0');
+                    resolve(newId);
+                } else {
+                    resolve('USR001'); // Default ID if no users exist
+                }
+            } else {
+                resolve('USR001'); // Default ID if no users exist
+            }
+        }, (error) => {
+            reject(error);
+        });
+    });
 }
