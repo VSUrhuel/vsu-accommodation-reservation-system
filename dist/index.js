@@ -27,7 +27,17 @@ document.addEventListener('DOMContentLoaded', function(){
     
     document.getElementById('signInBtn').addEventListener('click', signIn);
     document.getElementById('logInBtn').addEventListener('click', logIn);
+    document.getElementById('signInLink').addEventListener('click', function(){
+        document.querySelector('#logInForm').style.display = 'none';
+        document.querySelector('#signInForm').style.display = 'block';
+        signIn();
+    })
+    document.getElementById('logInLink').addEventListener('click', function(){
+        document.querySelector('#signInForm').style.display = 'none';
+        document.querySelector('#logInForm').style.display = 'block';
+    })
 })
+
 
 const navItems = [
     { name: "Home", href: "#", current: true },
@@ -133,6 +143,32 @@ function createAccommodation(accommodation) {
 function logIn() {
     document.querySelector('#homePage').style.display = 'none';
     document.querySelector('#logInForm').style.display = 'block';
+    document.querySelector('#logInForm').addEventListener('submit', logInAcc);
+
+   
+}
+
+function logInAcc() {
+    const email = document.querySelector('#email').value;
+    const password = document.querySelector('#password').value;
+    const userRef = ref(database, 'usser');
+    onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((data) => {
+                if (data.val().email == email && data.val().password == password) {
+                    console.log('User logged in successfully');
+                    document.querySelector('#logInForm').style.display = 'none';
+                    document.querySelector('#homePage').style.display = 'block';
+                    return;
+                }
+            });
+        }  else {
+            alert('User not found');
+            return;
+        }
+    }, (error) => {
+        alert(error);
+    });
 }
 
 function signIn() {
@@ -152,6 +188,8 @@ function signInGoogle() {
         // The signed-in user info.
         const user = result.user;
         console.log(user);
+        document.querySelector('#signInForm').style.display = 'none';
+        document.querySelector('#homePage').style.display = 'block';
     }).catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -194,10 +232,10 @@ async function createAccount(event) {
 
         });
         console.log('User created and additional data stored:', newId);
-        alert('Account created successfully!');
+        document.querySelector('#signInForm').style.display = 'none';
+        document.querySelector('#homePage').style.display = 'block';
     } catch (error) {
         console.error('Error creating user:', error);
-        alert('Error creating account: ' + error.message);
     }
     
 }
@@ -228,3 +266,4 @@ async function fetchLatestUserId() {
         });
     });
 }
+
