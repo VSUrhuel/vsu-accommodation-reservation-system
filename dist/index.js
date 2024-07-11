@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';  
-import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js';
 import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js';
         // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -20,22 +20,52 @@ const database = getDatabase(app);
 
 document.addEventListener('DOMContentLoaded', function(){
     //document.getElementById('scenic-views').innerHTML = scenicViews.map(createScenicView).join('');
-    document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
-    document.getElementById('accommodations').innerHTML = accommodations.map(createAccommodation).join('');
-    document.getElementById('carousel-items').innerHTML = carouselItems.map(createCarouselItem).join('');
-    document.getElementById('table-content').innerHTML = tableContent.map(createTableRow).join('');
+
+    function handleIndexPage() {
+        document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
+        document.getElementById('accommodations').innerHTML = accommodations.map(createAccommodation).join('');
+        document.getElementById('carousel-items').innerHTML = carouselItems.map(createCarouselItem).join('');
+        document.getElementById('table-content').innerHTML = tableContent.map(createTableRow).join('');
+        
+        const signInBtn = document.getElementById('signInBtn');
+        if (signInBtn) {
+            signInBtn.addEventListener('click', function() {
+                window.location.href = 'signin.html';
+            });
+        }
+        const logInBtn = document.getElementById('logInBtn');
+        if (logInBtn) {
+            logInBtn.addEventListener('click', function() {
+                window.location.href = 'login.html';
+            });
+        }
+       
+    }
     
-    document.getElementById('signInBtn').addEventListener('click', signIn);
-    document.getElementById('logInBtn').addEventListener('click', logIn);
-    document.getElementById('signInLink').addEventListener('click', function(){
-        document.querySelector('#logInForm').style.display = 'none';
-        document.querySelector('#signInForm').style.display = 'block';
-        signIn();
-    })
-    document.getElementById('logInLink').addEventListener('click', function(){
-        document.querySelector('#signInForm').style.display = 'none';
-        document.querySelector('#logInForm').style.display = 'block';
-    })
+    function handleLoginPage() {
+        const loginForm = document.getElementById("logInForm");
+        if (loginForm) {
+            loginForm.addEventListener('submit', logInAcc);
+        } 
+        document.querySelector('#logInBtn').addEventListener('click', logInAcc);
+    }
+
+    function handleSignInPage(){
+        const signInForm = document.querySelector('#signInForm');
+        if(signInForm){
+            signInForm.addEventListener('submit', createAccount);
+        }
+       // document.querySelector('#createAccount').addEventListener('submit', createAccount);
+        document.getElementById('googleSignIn').addEventListener('click', signInGoogle);
+        document.getElementById('fbSignIn').addEventListener('click', signInFacebook);
+    }
+    if (document.body.classList.contains('index-page')) {
+        handleIndexPage();
+    } else if (document.body.classList.contains('login-page')) {
+        handleLoginPage();
+    } else if(document.body.classList.contains('sigin-page')) {
+        handleSignInPage();
+    }
 })
 
 
@@ -140,46 +170,55 @@ function createAccommodation(accommodation) {
         </div>`;
 }
 
-function logIn() {
-    document.querySelector('#homePage').style.display = 'none';
-    document.querySelector('#logInForm').style.display = 'block';
-    document.querySelector('#logInForm').addEventListener('submit', logInAcc);
-
-   
+function successfulLogIn() {
+    // Redirect to the home page
+    
+    window.location.href = 'index.html';
+    // Hide the login/sign-in button
+    document.querySelector('#loginSigninBtn').style.display = 'none';
+    if (loginSigninBtn) {
+        
+    
+    alert("inside");
+        loginSigninBtn.style.display = 'none';
+    }
 }
 
-function logInAcc() {
+let isSubmitting = false;
+
+function logInAcc(event) {
+    event.preventDefault();
+    if (isSubmitting) return; // Prevent double submission
+    isSubmitting = true;
+
     const email = document.querySelector('#email').value;
     const password = document.querySelector('#password').value;
-    const userRef = ref(database, 'usser');
+    const userRef = ref(database, 'user');
+
     onValue(userRef, (snapshot) => {
         if (snapshot.exists()) {
+            let userFound = false;
             snapshot.forEach((data) => {
-                if (data.val().email == email && data.val().password == password) {
-                    console.log('User logged in successfully');
-                    document.querySelector('#logInForm').style.display = 'none';
-                    document.querySelector('#homePage').style.display = 'block';
+                if (data.val().email === email && data.val().password === password) {
+                    userFound = true;
+                    alert('User logged in successfully');
+                    successfulLogIn();
                     return;
                 }
             });
-        }  else {
+            if (!userFound) {
+                alert('User not found or incorrect password');
+                isSubmitting = false; // Reset the flag
+            }
+        } else {
             alert('User not found');
-            return;
+            isSubmitting = false; // Reset the flag
         }
     }, (error) => {
-        alert(error);
+        alert(`Error: ${error.message}`);
+        isSubmitting = false; // Reset the flag
     });
 }
-
-function signIn() {
-    document.querySelector('#signInForm').style.display = 'block';
-    document.querySelector('#homePage').style.display = 'none';
-    var data = fetchLatestUserId();
-    document.querySelector('#createAccount').addEventListener('submit', createAccount);
-    
-    document.getElementById('googleSignIn').addEventListener('click', signInGoogle);
-}
-
 function signInGoogle() {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider).then((result) => {
@@ -188,8 +227,7 @@ function signInGoogle() {
         // The signed-in user info.
         const user = result.user;
         console.log(user);
-        document.querySelector('#signInForm').style.display = 'none';
-        document.querySelector('#homePage').style.display = 'block';
+        sucesfullLogIn();
     }).catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -200,6 +238,27 @@ function signInGoogle() {
         alert(errorMessage);
     });
 }
+
+function signInFacebook() {
+    const auth = getAuth();
+    const provider = new FacebookAuthProvider();
+    signInWithPopup(auth, provider)
+        .then((result) => {
+            const credential = FacebookAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            const user = result.user;
+            console.log(user);
+            sucesfullLogIn();
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            const email = error.customData.email;
+            const credential = FacebookAuthProvider.credentialFromError(error);
+            alert(errorMessage);
+        });
+}
+
 async function createAccount(event) {
     event.preventDefault(); // Prevent the default form submission behavior
 
@@ -232,8 +291,7 @@ async function createAccount(event) {
 
         });
         console.log('User created and additional data stored:', newId);
-        document.querySelector('#signInForm').style.display = 'none';
-        document.querySelector('#homePage').style.display = 'block';
+        sucesfullLogIn();
     } catch (error) {
         console.error('Error creating user:', error);
     }
