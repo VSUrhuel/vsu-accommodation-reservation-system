@@ -18,10 +18,13 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
+var userEmail = '';
+
 document.addEventListener('DOMContentLoaded', function(){
     //document.getElementById('scenic-views').innerHTML = scenicViews.map(createScenicView).join('');
 
     function handleIndexPage() {
+        createUserCard();
         document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
         document.getElementById('accommodations').innerHTML = accommodations.map(createAccommodation).join('');
         document.getElementById('carousel-items').innerHTML = carouselItems.map(createCarouselItem).join('');
@@ -30,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function(){
         const signInBtn = document.getElementById('signInBtn');
         if (signInBtn) {
             signInBtn.addEventListener('click', function() {
-                window.location.href = 'signin.html';
+                window.location.href = 'signup.html';
             });
         }
         const logInBtn = document.getElementById('logInBtn');
@@ -39,7 +42,52 @@ document.addEventListener('DOMContentLoaded', function(){
                 window.location.href = 'login.html';
             });
         }
-       
+        /*
+        const userBtn = document.getElementById('userBtn');
+        if (userBtn){
+            userBtn.addEventListener('click', function() {
+                window.location.href = 'profile.html';
+            });
+        }*/
+
+        const signOutBtn = document.getElementById('signOutBtn');
+        if (signOutBtn) {
+            signOutBtn.addEventListener('click', function() {
+                safeRemoveItem('loggedIn');
+                safeRemoveItem('email');
+                window.location.href = 'index.html';
+            });
+        }
+
+        if (localStorage.getItem('loggedIn') === 'true') {
+            document.querySelector('#loginSigninBtn').style.display = 'none';
+            document.querySelector('#userCard').style.display = 'block';
+            const email = localStorage.getItem('email');
+            const userRef = ref(database, 'user');
+    
+            onValue(userRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((data) => {
+                        if (data.val().email === email) {
+                            document.getElementById('profileName').textContent = `${data.val().firstName} ${data.val().lastName}`;
+                            document.getElementById('profileEmail').textContent = data.val().email;
+                        }
+                    });
+                }
+            }, (error) => {
+                console.error('Error fetching user data:', error);
+            }); 
+            
+        } else {
+            document.querySelector('#userCard').style.display = 'none';
+        }
+
+        if (localStorage.getItem('signOut') === 'true') {
+            safeRemoveItem('loggedIn');
+            safeRemoveItem('email');
+            safeRemoveItem('signOut');
+            window.location.href = 'index.html';
+        }
     }
     
     function handleLoginPage() {
@@ -59,18 +107,177 @@ document.addEventListener('DOMContentLoaded', function(){
         document.getElementById('googleSignIn').addEventListener('click', signInGoogle);
         document.getElementById('fbSignIn').addEventListener('click', signInFacebook);
     }
+
+    function handleProfilePage() {
+        createUserCard();
+        populateNavItems();
+        const email = localStorage.getItem('email');
+        const userRef = ref(database, 'user');
+    
+        fetchUserData(userRef, email, populateProfileInfo);
+    
+        setupSignOutButton();
+        setupEditProfileButton(userRef, email);
+    
+        handleSignOutRedirect();
+    }
+
+    /*function handleProfilePage() {
+        createUserCard();
+        document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
+        const email = localStorage.getItem('email');
+        const userRef = ref(database, 'user');
+
+        onValue(userRef, (snapshot) => {
+            if (snapshot.exists()) {
+                snapshot.forEach((data) => {
+                    if (data.val().email === email) {
+                        document.getElementById('profileName').textContent = `${data.val().firstName} ${data.val().lastName}`;
+                        document.getElementById('profileEmail').textContent = data.val().email;
+                        document.getElementById('profileEmailInfo').textContent = data.val().email;
+                        document.getElementById('profilePhone').textContent = data.val().phoneNumber;
+                        document.getElementById('profileBirthday').textContent = data.val().birthday;
+
+                        document.getElementById('firstName').textContent = data.val().firstName;
+                        document.getElementById('lastName').textContent = data.val().lastName;
+                    }
+                });
+            }
+        }, (error) => {
+            console.error('Error fetching user data:', error);
+        });
+
+        const signOutBtn = document.getElementById('signOutBtn');
+        if (signOutBtn) {
+            signOutBtn.addEventListener('click', function() {
+                
+                localStorage.setItem('signOut', 'true');
+            
+                // Redirect to the home page
+                window.location.href = 'index.html';
+            });
+        }
+        
+        const editProfile = document.getElementById('editProfile');
+        if (editProfile) {
+            editProfile.addEventListener('click', function() {
+                //HEREREEEEEEE
+                
+                document.getElementById('profileInfo').style.display = 'none';
+                document.getElementById('editProfileForm').style.display = 'block';
+
+                onValue(userRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        snapshot.forEach((data) => {
+                            if (data.val().email === email) {
+                                document.getElementById('editEmail').textContent = data.val().email;
+                                document.getElementById('editPhoneNumber').textContent = data.val().phoneNumber;
+                                document.getElementById('editBirthday').textContent = data.val().birthday;
+        
+                                document.getElementById('editFirstName').textContent = data.val().firstName;
+                                document.getElementById('editLastName').textContent = data.val().lastName;
+                            }
+                        });
+                    }
+                }, (error) => {
+                    console.error('Error fetching user data:', error);
+                });
+            });
+        }
+
+        if (localStorage.getItem('signOut') === 'true') {
+            safeRemoveItem('loggedIn');
+            safeRemoveItem('email');
+            safeRemoveItem('signOut');
+            window.location.href = 'index.html';
+        }
+    }*/
     if (document.body.classList.contains('index-page')) {
         handleIndexPage();
     } else if (document.body.classList.contains('login-page')) {
         handleLoginPage();
     } else if(document.body.classList.contains('sigin-page')) {
         handleSignInPage();
+    } else if(document.body.classList.contains('profile-page')) {
+        handleProfilePage();
     }
 })
 
+function populateNavItems() {
+    document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
+}
+
+function fetchUserData(userRef, email, callback) {
+    onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((data) => {
+                if (data.val().email === email) {
+                    callback(data.val());
+                }
+            });
+        }
+    }, (error) => {
+        console.error('Error fetching user data:', error);
+    });
+}
+
+function populateProfileInfo(userData) {
+    document.getElementById('profileName').textContent = `${userData.firstName} ${userData.lastName}`;
+    document.getElementById('profileEmail').textContent = userData.email;
+    document.getElementById('profileEmailInfo').textContent = userData.email;
+    document.getElementById('profilePhone').textContent = userData.phoneNumber;
+    document.getElementById('profileBirthday').textContent = userData.birthday;
+
+    document.getElementById('firstName').textContent = userData.firstName;
+    document.getElementById('lastName').textContent = userData.lastName;
+
+}
+
+function setupSignOutButton() {
+    const signOutBtn = document.getElementById('signOutBtn');
+    if (signOutBtn) {
+        signOutBtn.addEventListener('click', function() {
+            localStorage.setItem('signOut', 'true');
+            window.location.href = 'index.html';
+        });
+    }
+}
+
+function setupEditProfileButton(userRef, email) {
+    const editProfile = document.getElementById('editProfile');
+    if (editProfile) {
+        editProfile.addEventListener('click', function() {
+            document.getElementById('profileInfo').style.display = 'none';
+            document.getElementById('editProfileForm').style.display = 'block';
+
+            fetchUserData(userRef, email, populatedEditProfileInfo);
+        });
+    }
+}
+
+function populatedEditProfileInfo(userData) {
+    document.getElementById('editEmail').textContent = userData.email;
+    document.getElementById('editPhoneNumber').textContent = userData.phoneNumber;
+    document.getElementById('editBirthday').textContent = userData.birthday;
+
+    document.getElementById('editFirstName').textContent = userData.firstName;
+    document.getElementById('editLastName').textContent = userData.lastName;
+
+}
+
+function handleSignOutRedirect() {
+    if (localStorage.getItem('signOut') === 'true') {
+        safeRemoveItem('loggedIn');
+        safeRemoveItem('email');
+        safeRemoveItem('signOut');
+        window.location.href = 'index.html';
+    }
+}
+
+
 
 const navItems = [
-    { name: "Home", href: "#", current: true },
+    { name: "Home", href: "index.html", current: true },
     { name: "About", href: "#" },
     { name: "Services", href: "#" },
     { name: "Contact", href: "#" }
@@ -133,6 +340,17 @@ function createTableRow(row) {
     `;
 }
 
+function createInputField(data) {
+    return `<div class="relative">
+                  <input
+                    type="text"
+                    value="${data.info}"
+                    id=""
+                    class="px-3 py-2 text-xs font-medium text-left inline-flex items-center text-black bg-white rounded-lg focus:outline-none"
+                  />
+                </div>;`
+
+}
 function createScenicView(view) {
     return `
         <div class="grid gap-4">
@@ -143,6 +361,96 @@ function createScenicView(view) {
         </div>`;
 }
 
+function safeRemoveItem(key) {
+    if (localStorage.getItem(key) !== null) {
+        localStorage.removeItem(key);
+        console.log(`Removed item with key: ${key}`);
+    } else {
+        alert(`Item with key: ${key} does not exist`);
+    }
+}
+
+function createUserCard() {
+    const userCard = document.getElementById('userCard');
+
+    // Create the inner flex container
+    const flexContainer = document.createElement('div');
+    flexContainer.className = 'flex items-center gap-4 h-10';
+
+    // Create the user image
+    const userImg = document.createElement('img');
+    userImg.src = '/src/profile.png';
+    userImg.alt = 'user';
+    userImg.className = 'h-10 w-auto cursor-pointer';
+    userImg.type = 'button';
+    userImg.id = 'userBtn';
+    userImg.setAttribute('data-dropdown-toggle', 'dropdownDelay');
+    userImg.setAttribute('data-dropdown-delay', '300');
+    userImg.setAttribute('data-dropdown-trigger', 'hover');
+
+    // Create the dropdown div
+    const dropdownDiv = document.createElement('div');
+    dropdownDiv.id = 'dropdownDelay';
+    dropdownDiv.className = 'z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44';
+
+    // Create the dropdown ul
+    const dropdownUl = document.createElement('ul');
+    dropdownUl.className = 'py-2 text-sm text-gray-700 dark:text-gray-200';
+    dropdownUl.setAttribute('aria-labelledby', 'dropdownDelayButton');
+
+    // Create the profile list item
+    const profileLi = document.createElement('li');
+    const profileLink = document.createElement('a');
+    profileLink.href = 'profile.html';
+    profileLink.className = 'block px-4 py-2 hover:bg-gray-100';
+    profileLink.textContent = 'Profile';
+    profileLi.appendChild(profileLink);
+
+    // Create the sign out list item
+    const signOutLi = document.createElement('li');
+    const signOutLink = document.createElement('a');
+    signOutLink.href = '';
+    signOutLink.id = 'signOutBtn';
+    signOutLink.className = 'block px-4 py-2 hover:bg-gray-100';
+    signOutLink.textContent = 'Sign out';
+    signOutLi.appendChild(signOutLink);
+
+    // Append list items to the dropdown ul
+    dropdownUl.appendChild(profileLi);
+    dropdownUl.appendChild(signOutLi);
+
+    // Append ul to the dropdown div
+    dropdownDiv.appendChild(dropdownUl);
+
+    // Create the profile info div
+    const profileInfoDiv = document.createElement('div');
+    profileInfoDiv.className = 'font-medium text-black';
+
+    // Create the profile name div
+    const profileNameDiv = document.createElement('div');
+    profileNameDiv.id = 'profileName';
+    profileNameDiv.textContent = 'Rhuel Laurente';
+
+    // Create the profile email div
+    const profileEmailDiv = document.createElement('div');
+    profileEmailDiv.className = 'text-sm text-gray-500 hover:underline hover:text-blue-600 cursor-pointer';
+    profileEmailDiv.id = 'profileEmail';
+    profileEmailDiv.textContent = 'johnrhuell@gmail.com';
+
+    // Append name and email to the profile info div
+    profileInfoDiv.appendChild(profileNameDiv);
+    profileInfoDiv.appendChild(profileEmailDiv);
+
+    // Append image, dropdown, and profile info to the flex container
+    flexContainer.appendChild(userImg);
+    flexContainer.appendChild(dropdownDiv);
+    flexContainer.appendChild(profileInfoDiv);
+
+    // Append the flex container to the main container
+    userCard.appendChild(flexContainer);
+
+    // Append the main container to the body or a specific parent element
+}
 function createAccommodation(accommodation) {
     return `
         <div class="grid gap-4 items-center">
@@ -170,19 +478,8 @@ function createAccommodation(accommodation) {
         </div>`;
 }
 
-function successfulLogIn() {
-    // Redirect to the home page
-    
-    window.location.href = 'index.html';
-    // Hide the login/sign-in button
-    document.querySelector('#loginSigninBtn').style.display = 'none';
-    if (loginSigninBtn) {
-        
-    
-    alert("inside");
-        loginSigninBtn.style.display = 'none';
-    }
-}
+ 
+
 
 let isSubmitting = false;
 
@@ -202,7 +499,9 @@ function logInAcc(event) {
                 if (data.val().email === email && data.val().password === password) {
                     userFound = true;
                     alert('User logged in successfully');
-                    successfulLogIn();
+                    localStorage.setItem('loggedIn', 'true');
+                    localStorage.setItem('email', `${email}`);
+                    window.location.href = 'index.html';
                     return;
                 }
             });
@@ -227,7 +526,9 @@ function signInGoogle() {
         // The signed-in user info.
         const user = result.user;
         console.log(user);
-        sucesfullLogIn();
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('email', `${user.email}`);
+        window.location.href = 'index.html';
     }).catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -248,7 +549,9 @@ function signInFacebook() {
             const token = credential.accessToken;
             const user = result.user;
             console.log(user);
-            sucesfullLogIn();
+            localStorage.setItem('loggedIn', 'true');
+            localStorage.setItem('email', `${user.email}`);
+            window.location.href = 'index.html';
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -291,7 +594,9 @@ async function createAccount(event) {
 
         });
         console.log('User created and additional data stored:', newId);
-        sucesfullLogIn();
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('email', `${floating_email}`);
+        window.location.href = 'index.html';
     } catch (error) {
         console.error('Error creating user:', error);
     }
