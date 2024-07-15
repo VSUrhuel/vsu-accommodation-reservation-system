@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';  
 import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js';
-import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js';
+import { getDatabase, ref, set, onValue, update } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js';
         // Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBYOi_Y3now8wDYR1SrqMkMDqdEh4VsZgI",
@@ -26,10 +26,13 @@ document.addEventListener('DOMContentLoaded', function(){
     function handleIndexPage() {
         createUserCard();
         document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
-        document.getElementById('accommodations').innerHTML = accommodations.map(createAccommodation).join('');
+        
         document.getElementById('carousel-items').innerHTML = carouselItems.map(createCarouselItem).join('');
         document.getElementById('table-content').innerHTML = tableContent.map(createTableRow).join('');
         
+
+        viewAccommodations();
+
         const signInBtn = document.getElementById('signInBtn');
         if (signInBtn) {
             signInBtn.addEventListener('click', function() {
@@ -55,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function(){
             signOutBtn.addEventListener('click', function() {
                 safeRemoveItem('loggedIn');
                 safeRemoveItem('email');
+                safeRemoveItem('signOut');
                 window.location.href = 'index.html';
             });
         }
@@ -108,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function(){
         document.getElementById('fbSignIn').addEventListener('click', signInFacebook);
     }
 
-    function handleProfilePage() {
+    /*function handleProfilePage() {
         createUserCard();
         populateNavItems();
         const email = localStorage.getItem('email');
@@ -118,11 +122,36 @@ document.addEventListener('DOMContentLoaded', function(){
     
         setupSignOutButton();
         setupEditProfileButton(userRef, email);
-    
+        
         handleSignOutRedirect();
-    }
 
-    /*function handleProfilePage() {
+        //IM HERE HAVING ISSUE
+
+       const profileForm = document.getElementById('profileForm');
+        if (profileForm) {
+            profileForm.addEventListener('submit', function(evet) {
+                event.preventDefault();
+                const newPhoneNumber = document.getElementById('editPhoneNumber').textContent;
+                const newBirthday = document.getElementById('editBirthday').value;
+                const newFirstName = document.getElementById('editFirstName').value;
+                const newLastName = document.getElementById('editLastName').value;
+                alert(newPhoneNumber);
+
+                set(ref(database, `user/${localStorage.getItem('userKey')}`), {
+                    email: localStorage.getItem('email'),
+                    phoneNumber: newPhoneNumber,
+                    birthday: newBirthday,
+                    firstName: newFirstName,
+                    lastName: newLastName
+                });
+
+                alert('Profile updated successfully');
+                window.location.href = 'profile.html';
+            });
+        }
+    }*/
+
+    function handleProfilePage() {
         createUserCard();
         document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
         const email = localStorage.getItem('email');
@@ -133,6 +162,8 @@ document.addEventListener('DOMContentLoaded', function(){
                 snapshot.forEach((data) => {
                     if (data.val().email === email) {
                         document.getElementById('profileName').textContent = `${data.val().firstName} ${data.val().lastName}`;
+                        
+                        document.getElementById('profileName1').textContent = `${data.val().firstName} ${data.val().lastName}`;
                         document.getElementById('profileEmail').textContent = data.val().email;
                         document.getElementById('profileEmailInfo').textContent = data.val().email;
                         document.getElementById('profilePhone').textContent = data.val().phoneNumber;
@@ -165,17 +196,17 @@ document.addEventListener('DOMContentLoaded', function(){
                 
                 document.getElementById('profileInfo').style.display = 'none';
                 document.getElementById('editProfileForm').style.display = 'block';
-
+               
                 onValue(userRef, (snapshot) => {
                     if (snapshot.exists()) {
                         snapshot.forEach((data) => {
                             if (data.val().email === email) {
                                 document.getElementById('editEmail').textContent = data.val().email;
-                                document.getElementById('editPhoneNumber').textContent = data.val().phoneNumber;
-                                document.getElementById('editBirthday').textContent = data.val().birthday;
+                                document.getElementById('editPhoneNumber').value = data.val().phoneNumber;
+                                document.getElementById('editBirthday').value = data.val().birthday;
         
-                                document.getElementById('editFirstName').textContent = data.val().firstName;
-                                document.getElementById('editLastName').textContent = data.val().lastName;
+                                document.getElementById('editFirstName').value = data.val().firstName;
+                                document.getElementById('editLastName').value = data.val().lastName;
                             }
                         });
                     }
@@ -185,13 +216,38 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         }
 
-        if (localStorage.getItem('signOut') === 'true') {
-            safeRemoveItem('loggedIn');
-            safeRemoveItem('email');
-            safeRemoveItem('signOut');
-            window.location.href = 'index.html';
+      
+
+        const profileForm = document.getElementById('profileForm');
+        if (profileForm) {
+            profileForm.addEventListener('submit', function(evet) {
+                event.preventDefault();
+                const newPhoneNumber = document.getElementById('editPhoneNumber').value;
+                const newBirthday = document.getElementById('editBirthday').value;
+                const newFirstName = document.getElementById('editFirstName').value;
+                const newLastName = document.getElementById('editLastName').value;
+
+
+                update(ref(database, `user/${localStorage.getItem('userKey')}`), {
+                    email: localStorage.getItem('email'),
+                    phoneNumber: newPhoneNumber,
+                    birthday: newBirthday,
+                    firstName: newFirstName,
+                    lastName: newLastName
+                });
+
+                window.location.href = 'profile.html';
+            });
+
+        
+            if (localStorage.getItem('signOut') === 'true') {
+                safeRemoveItem('loggedIn');
+                safeRemoveItem('email');
+                safeRemoveItem('signOut');
+                window.location.href = 'index.html';
+            }
         }
-    }*/
+    }
     if (document.body.classList.contains('index-page')) {
         handleIndexPage();
     } else if (document.body.classList.contains('login-page')) {
@@ -202,6 +258,33 @@ document.addEventListener('DOMContentLoaded', function(){
         handleProfilePage();
     }
 })
+
+function viewAccommodations() {
+    let accommodations = [];
+    const userRef = ref(database, 'accommodations');
+
+    onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+            accommodations = []; // Clear the array to avoid duplicates
+            snapshot.forEach((data) => {
+                const acc = {
+                    src: data.val().src,
+                    name: data.val().accommodationName,
+                    location: data.val().location,
+                    price: data.val().price
+                };
+                accommodations.push(acc);
+            });
+            // Update the DOM after processing all data
+            document.getElementById('accommodations').innerHTML = accommodations.map(createAccommodation).join('');
+        } else {
+            console.log('No accommodations found');
+        }
+    }, (error) => {
+        console.error('Error fetching data:', error);
+    });
+
+}
 
 function populateNavItems() {
     document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
@@ -304,12 +387,7 @@ const scenicViews = [
     { src: "/src/vsu-scenic-view/vsu2.jpg", alt: "VSU Lower Campus", description: "VSU Lower Campus" }
 ];
 
-const accommodations = [
-    { src: "/src/hotel-room.jpg", name: "Hostel", location: "VSU Lower Campus", price: "PHP 700/night" },
-    { src: "/src/hotel-room2.jpg", name: "Apartelle", location: "VSU Lower Campus", price: "PHP 800/night" },
-    { src: "/src/hotel-room3.jpg", name: "Seafront Suite", location: "VSU Lower Campus", price: "PHP 800/night" },
-    { src: "/src/hotel-room4.jpg", name: "Balay Alumni", location: "VSU Lower Campus", price: "PHP 800/night" }
-];
+
 
 function createNavItem(item) {
     return `
@@ -501,6 +579,8 @@ function logInAcc(event) {
                     alert('User logged in successfully');
                     localStorage.setItem('loggedIn', 'true');
                     localStorage.setItem('email', `${email}`);
+                    localStorage.setItem('userKey', `${data.key}`);
+                    localStorage.setItem('signOut', 'false')
                     window.location.href = 'index.html';
                     return;
                 }
