@@ -314,13 +314,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 // Find the corresponding amenity object
-                const amenityData = amenities.find(a => a.name === x);
+                let amenityData = amenities.find(a => a.name === x);
+
+                // Handle special case for 'bed'
+                if (x.includes('bed')) {
+                    amenityData = amenities.find(a => a.name === 'bed');
+                }
+                console.log(amenityData);
                 if (amenityData) {
                     amenity.innerHTML = amenityData.svg;
 
                     const title = document.createElement('p');
                     title.className = 'pl-2';
-                    title.textContent = x;
+                    if(x.includes('bed')){
+                        title.textContent = titleCase(x);
+                    } else {
+                        title.textContent = x;
+                    }
 
                     amenity.appendChild(title);
                     amenitiesList.appendChild(amenity);
@@ -357,6 +367,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 })
 
+function titleCase(str){
+    str = str.toLowerCase().split(' ');
+    for(let i=0; i<str.length; i++){
+        str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+    }
+    return str.join(' ');
+}
 function viewAccommodations() {
     let accommodations = [];
     const userRef = ref(database, 'accommodations');
@@ -383,7 +400,7 @@ function viewAccommodations() {
                     const button = event.target.closest('.dynamic-button');
                     const accommodationId = button.getAttribute('data-id');
                     alert(`Button clicked for accommodation ID: ${accommodationId}`);
-                    viewRoom('UNT011');
+                    viewRoom('UNT001');
                     // Add your event handling logic here
                 }
             });
