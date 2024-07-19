@@ -279,6 +279,54 @@ document.addEventListener('DOMContentLoaded', function(){
             document.querySelector('#userCard').style.display = 'none';
         }
 
+        if(localStorage.getItem('roomData')){
+            const room = JSON.parse(localStorage.getItem('roomData'));
+            var accomodation = '';
+            if(room.accommodationId  === 'ACC001') {
+                accomodation = 'Apartlle';
+            } else if(room.accommodationId === 'ACC002') {
+                accomodation = 'Seafront Suite';
+            } else if(room.accommodationId  === 'ACC003') {
+                accomodation = 'Balay Alumni';
+            } else {
+                accomodation = 'Hostel';
+            }
+            document.getElementById('roomTitle').textContent = `Book ${accomodation}`;
+            document.getElementById('accName').textContent = `${accomodation}`;
+            document.getElementById('roomType').textContent = room.unitType;    
+            document.getElementById('pricePerNight').textContent = `${room.price.toLocaleString('en-US', {style: 'currency', currency: 'PHP'})}`;
+
+            const amenitiesList = document.getElementById('amenities');
+
+            // Clear the existing list if any
+            amenitiesList.innerHTML = '';
+            console.log(room.amenities);
+            var i = 0;
+            room.amenities.forEach((x) => {
+                
+                const amenity = document.createElement('li');
+                if(i==0){
+                    amenity.className = 'inline-flex items-center';
+                    i++;
+                } else {
+                    amenity.className = 'inline-flex items-center ml-6';
+                }
+            
+                // Find the corresponding amenity object
+                const amenityData = amenities.find(a => a.name === x);
+                if (amenityData) {
+                    amenity.innerHTML = amenityData.svg;
+            
+                    const title = document.createElement('p');
+                    title.className = 'pl-2';
+                    title.textContent = x;
+            
+                    amenity.appendChild(title);
+                    amenitiesList.appendChild(amenity);
+                }
+            });
+        }
+
         if (localStorage.getItem('signOut') === 'true') {
             safeRemoveItem('loggedIn');
             safeRemoveItem('email');
@@ -317,14 +365,17 @@ function viewAccommodations() {
                 accommodations.push(acc);
             });
             // Update the DOM after processing all data
-            document.getElementById('accommodations').innerHTML = accommodations.map(createAccommodation).join('');
+            const accommodationsContainer = document.getElementById('accommodations');
+            accommodationsContainer.innerHTML = accommodations.map(createAccommodation).join('');
 
-            document.querySelectorAll('.dynamic-button').forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const accommodationId = event.currentTarget.getAttribute('data-id');
+            accommodationsContainer.addEventListener('click', (event) => {
+                if (event.target.closest('.dynamic-button')) {
+                    const button = event.target.closest('.dynamic-button');
+                    const accommodationId = button.getAttribute('data-id');
                     alert(`Button clicked for accommodation ID: ${accommodationId}`);
+                    viewRoom('UNT001');
                     // Add your event handling logic here
-                });
+                }
             });
         } else {
             console.log('No accommodations found');
@@ -406,6 +457,67 @@ function handleSignOutRedirect() {
     }
 }
 
+const amenities = [
+    { name: "Free Wifi", svg: `<svg
+                      version="1.1"
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                      class="w-4 h-auto inline"
+                      viewBox="0 0 122.88 94.72"
+                      xml:space="preserve"
+                    >
+                      <g>
+                        <path
+                          d="M8.46,31.23c-1.08,0.92-2.42,1.32-3.72,1.22c-1.31-0.1-2.58-0.7-3.5-1.78l-0.02-0.03c-0.91-1.07-1.3-2.41-1.2-3.7 c0.1-1.31,0.7-2.58,1.78-3.5l0.01-0.01c9.06-7.77,18.73-13.65,28.73-17.58c10.08-3.96,20.5-5.93,31-5.84 c10.35,0.09,20.74,2.19,30.9,6.36c9.81,4.03,19.4,10,28.55,17.97c0.11,0.08,0.21,0.17,0.29,0.26c0.96,0.92,1.5,2.13,1.58,3.37 c0.08,1.24-0.29,2.51-1.12,3.55c-0.08,0.12-0.18,0.23-0.29,0.33c-0.92,0.96-2.13,1.5-3.37,1.58c-1.3,0.09-2.65-0.33-3.71-1.26 c-8.27-7.23-16.9-12.62-25.68-16.25c-8.99-3.72-18.14-5.58-27.23-5.66c-9.2-0.08-18.38,1.68-27.31,5.2 C25.25,18.97,16.6,24.25,8.46,31.23L8.46,31.23z M61.44,72.27c3.1,0,5.9,1.26,7.93,3.29c2.03,2.03,3.29,4.84,3.29,7.93 c0,3.1-1.26,5.9-3.29,7.93c-2.03,2.03-4.84,3.29-7.93,3.29c-3.1,0-5.9-1.26-7.94-3.29c-2.03-2.03-3.29-4.84-3.29-7.93 c0-3.09,1.26-5.9,3.29-7.93l0,0C55.54,73.53,58.34,72.27,61.44,72.27L61.44,72.27z M42.07,66.17c-1.1,0.89-2.46,1.26-3.76,1.12 c-1.24-0.13-2.44-0.71-3.32-1.71c-0.1-0.1-0.19-0.21-0.26-0.32c-0.8-1.07-1.12-2.35-0.99-3.59c0.13-1.24,0.71-2.44,1.71-3.32 c0.09-0.09,0.19-0.17,0.29-0.24c4-3.23,8.18-5.7,12.47-7.37c4.35-1.7,8.82-2.57,13.33-2.58c4.45-0.01,8.89,0.81,13.27,2.5 c4.25,1.64,8.44,4.11,12.48,7.41c1.1,0.89,1.73,2.15,1.87,3.45c0.13,1.3-0.23,2.66-1.12,3.76l-0.01,0.01 c-0.89,1.09-2.14,1.72-3.45,1.86c-1.3,0.13-2.66-0.23-3.76-1.12l0,0c-3.14-2.57-6.35-4.47-9.56-5.73c-3.25-1.28-6.5-1.9-9.72-1.89 c-3.25,0.01-6.52,0.67-9.77,1.96C48.46,61.67,45.21,63.62,42.07,66.17L42.07,66.17z M25.81,49.65c-0.08,0.08-0.17,0.16-0.26,0.22 c-1.03,0.84-2.3,1.21-3.53,1.14c-1.27-0.08-2.51-0.63-3.44-1.63c-0.09-0.08-0.16-0.17-0.23-0.26c-0.84-1.03-1.21-2.3-1.14-3.53 c0.08-1.31,0.66-2.59,1.72-3.53c6.81-6.03,13.85-10.59,21.01-13.61c7.18-3.02,14.49-4.51,21.85-4.38c7.27,0.12,14.53,1.8,21.69,5.1 c6.97,3.21,13.86,7.96,20.59,14.3l0.13,0.12c0.95,0.95,1.44,2.2,1.48,3.46c0.04,1.31-0.42,2.63-1.39,3.66l-0.12,0.13 c-0.96,0.95-2.2,1.45-3.46,1.49c-1.31,0.04-2.63-0.42-3.66-1.39c-5.83-5.5-11.73-9.59-17.62-12.35c-5.95-2.78-11.9-4.19-17.8-4.29 c-5.99-0.1-12,1.15-17.96,3.69C37.64,40.58,31.66,44.48,25.81,49.65L25.81,49.65z"
+                        />
+                      </g>
+                    </svg>` },
+    { name: "Air Conditioning", svg: `<svg
+                      version="1.1"
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                      class="w-4 h-auto inline"
+                      viewBox="0 0 122.88 122.88"
+                      xml:space="preserve"
+                    >
+                      <g>
+                        <path
+                          d="M58.76,44.64l-6.9-6.9l-0.58,8.81l7.48,7.48V44.64L58.76,44.64z M32.17,35.1l-12.8,0.48c-1.49,0.05-2.74-1.11-2.79-2.6 c-0.05-1.49,1.11-2.74,2.6-2.79l7.78-0.29l-8.81-8.81c-1.06-1.06-1.06-2.77,0-3.83c1.06-1.06,2.77-1.06,3.83,0l8.67,8.67l0.12-7.29 c0.02-1.49,1.25-2.68,2.74-2.66c1.49,0.02,2.68,1.25,2.66,2.74l-0.2,12.52l11.23,11.23l0.64-9.78c0.07-1.19,1.1-2.1,2.29-2.02 c0.55,0.03,1.03,0.27,1.39,0.63l0,0l7.22,7.22V20.82l-9-8.72c-1.07-1.04-1.09-2.75-0.05-3.82c1.04-1.07,2.75-1.09,3.82-0.05 l5.23,5.07V2.71c0-1.5,1.21-2.71,2.71-2.71c1.5,0,2.71,1.21,2.71,2.71v10.77l5.71-5.29c1.09-1.02,2.8-0.96,3.82,0.14 c1.02,1.09,0.96,2.8-0.14,3.82l-9.39,8.71v16.89l7.51-6.58c0.9-0.79,2.26-0.69,3.05,0.2c0.36,0.41,0.53,0.92,0.53,1.42h0.01v10.92 l13.07-13.07l-0.2-12.52c-0.02-1.49,1.17-2.72,2.66-2.74c1.49-0.02,2.72,1.17,2.74,2.66l0.12,7.29l7.49-7.49 c1.06-1.06,2.77-1.06,3.83,0c1.06,1.06,1.06,2.77,0,3.83l-7.62,7.62l7.78,0.29c1.49,0.05,2.66,1.3,2.6,2.79 c-0.05,1.49-1.3,2.66-2.79,2.6l-12.8-0.48L80.31,46.34l9.28,0.61c1.19,0.07,2.1,1.1,2.02,2.29c-0.03,0.55-0.27,1.03-0.63,1.39l0,0 l-7.28,7.28h18.34l8.72-9c1.04-1.07,2.75-1.09,3.82-0.05c1.07,1.04,1.09,2.75,0.05,3.82l-5.07,5.23h10.58 c1.5,0,2.71,1.21,2.71,2.71c0,1.5-1.21,2.71-2.71,2.71H109.4l5.29,5.71c1.02,1.09,0.96,2.8-0.14,3.82 c-1.09,1.02-2.8,0.96-3.82-0.14l-8.71-9.39H84.59l6.53,7.45c0.79,0.9,0.69,2.26-0.2,3.05c-0.41,0.36-0.92,0.53-1.42,0.53v0.01 H79.11L92.23,87.5l12.52-0.2c1.49-0.02,2.72,1.17,2.74,2.66c0.02,1.49-1.17,2.72-2.66,2.74l-7.29,0.12l7.49,7.49 c1.06,1.06,1.06,2.77,0,3.83c-1.06,1.06-2.77,1.06-3.83,0l-7.62-7.62l-0.29,7.78c-0.05,1.49-1.3,2.66-2.79,2.6 c-1.49-0.05-2.66-1.3-2.6-2.79l0.48-12.8l-12.4-12.4l-0.64,9.78c-0.07,1.19-1.1,2.1-2.29,2.02c-0.55-0.03-1.03-0.27-1.39-0.63l0,0 l-7.47-7.47v17.72l9.39,8.71c1.09,1.02,1.15,2.73,0.14,3.82c-1.02,1.09-2.73,1.15-3.82,0.14l-5.71-5.29v12.45 c0,1.5-1.21,2.71-2.71,2.71c-1.5,0-2.71-1.21-2.71-2.71v-12.26l-5.23,5.07c-1.07,1.04-2.78,1.02-3.82-0.05 c-1.04-1.07-1.02-2.78,0.05-3.82l9-8.72V83.86l-7.26,6.36c-0.9,0.79-2.26,0.69-3.05-0.2c-0.36-0.41-0.53-0.92-0.53-1.42h-0.01 v-9.85L35.94,90.71l0.48,12.8c0.05,1.49-1.11,2.74-2.6,2.79c-1.49,0.05-2.74-1.11-2.79-2.6l-0.29-7.78l-8.81,8.81 c-1.06,1.06-2.77,1.06-3.83,0c-1.06-1.06-1.06-2.77,0-3.83l8.67-8.67l-7.29-0.12c-1.49-0.02-2.68-1.25-2.66-2.74 c0.02-1.49,1.25-2.68,2.74-2.66l12.52,0.2l11.8-11.8l-10.28-0.68c-1.19-0.07-2.1-1.1-2.02-2.29c0.03-0.55,0.27-1.03,0.63-1.39l0,0 l7.4-7.41H22.54l-8.71,9.39c-1.02,1.09-2.73,1.15-3.82,0.14c-1.09-1.02-1.15-2.73-0.14-3.82l5.29-5.71H2.71 c-1.5,0-2.71-1.21-2.71-2.71c0-1.5,1.21-2.71,2.71-2.71h12.26l-5.07-5.23c-1.04-1.07-1.02-2.78,0.05-3.82 c1.07-1.04,2.78-1.02,3.82,0.05l8.72,9h15.99l-6.41-7.32c-0.79-0.9-0.69-2.26,0.2-3.05c0.41-0.36,0.92-0.53,1.42-0.53v-0.01h10.38 L32.17,35.1L32.17,35.1z M48.41,51.35h-9.95l5.76,6.57h10.76L48.41,51.35L48.41,51.35z M71.91,74.84l-7.73-7.73v9.39l7.15,7.15 L71.91,74.84L71.91,74.84z M68.07,63.34l6.7,6.7h9.95l-5.87-6.7H68.07L68.07,63.34z M45.73,63.34l-7.09,7.09l9.31,0.61l7.71-7.71 H45.73L45.73,63.34z M68.73,57.92h8.85l6.97-6.97l-8.31-0.55L68.73,57.92L68.73,57.92z M52.25,74.4v9.41l6.51-5.71V67.89 L52.25,74.4L52.25,74.4z M64.18,54.81l6.76-6.76V37.57l-6.76,5.93V54.81L64.18,54.81z"
+                        />
+                      </g>
+                    </svg>`},
+    { name: "Free TV", svg: `<svg
+                      version="1.1"
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                      class="h-4 w-auto inline"
+                      viewBox="0 0 122.88 83.06"
+                      style="enable-background: new 0 0 122.88 83.06"
+                      xml:space="preserve"
+                    >
+                      <g>
+                        <path
+                          d="M2.08,0H120.8h2.08v2.08v69.2v2.08h-2.08H77.57v4.55h16.61v5.15H28.55v-5.15h16.61v-4.55H2.08H0v-2.08V2.08V0H2.08L2.08,0z M118.73,4.15H4.15v65.05h114.57V4.15L118.73,4.15z"
+                        />
+                      </g>
+                    </svg>`},
+    { name: "Hot and Cold Shower", svg: `<svg 
+        version="1.1"
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                      class="h-4 w-auto inline"
+                      viewBox="0 0 122.88 83.06"
+                      style="enable-background: new 0 0 122.88 83.06"
+                      xml:space="preserve">
+                      <g>
+                      <path class="st0" d="M28.38,20.1l0.05-0.08c0.27-0.38,0.8-0.47,1.18-0.2l6.5,4.55c0.38,0.27,0.47,0.8,0.2,1.18l-0.05,0.08 c-0.27,0.38-0.8,0.47-1.18,0.2l-6.5-4.55C28.21,21.02,28.12,20.48,28.38,20.1L28.38,20.1z M60.91,89.12v28.25 c0,3.71-2.7,5.51-6,5.51h0c-3.3,0-6-1.8-6-5.51v-27.6h-3.6v27.6c0,3.71-2.7,5.51-6,5.51h0c-3.3,0-6-1.8-6-5.51V89.12 c-0.15-0.24-0.25-0.54-0.25-0.86V64.45l0-0.08l-16.8-8.53c-2.33-1.18-3.35-3.93-2.42-6.31l6.22-17.71c0.91-2.62,3.78-4,6.4-3.09 c2.62,0.91,4,3.78,3.09,6.4l-4.82,13.73l12.98,6.59c0.18,0.09,0.34,0.19,0.5,0.29c4.72-2.85,11.71-3.24,16.73-1.41l12.38-7.56 l-5.67-13.93c-1.04-2.58,0.2-5.51,2.78-6.56c2.58-1.04,5.51,0.2,6.56,2.78l7.28,17.88c0.91,2.24,0.08,4.88-2.05,6.18l-15.07,9.21 v25.93C61.16,88.57,61.07,88.87,60.91,89.12L60.91,89.12z M47.12,29.03c6.03,0,10.91,4.89,10.91,10.91 c0,6.03-4.89,10.91-10.91,10.91c-6.03,0-10.91-4.89-10.91-10.91C36.2,33.92,41.09,29.03,47.12,29.03L47.12,29.03z M0,10.28 c2.92-3.81,17.16-6.74,20.74-4.32c-2.12,3.71-1.85,7.48,1.16,11.33c-0.38,0.63-0.35,1.3,0.08,2.04l0.95,1.09 c0.38,0.38,0.85,0.42,1.46-0.08l14.45-14.6c0.39-0.47,0.32-0.87-0.14-1.24c-1.03-1.25-1.15-1.47-2.97-1.16 c-4.05-2.64-7.91-3.1-11.55-1.01C17.21-1.69,6.21-0.22,0,4.51V10.28L0,10.28z M36.57,13.08l0.05-0.08c0.27-0.38,0.8-0.47,1.18-0.2 l6.5,4.55c0.38,0.27,0.47,0.8,0.2,1.18l-0.05,0.08c-0.27,0.38-0.8,0.47-1.18,0.2l-6.5-4.55C36.39,13.99,36.3,13.46,36.57,13.08 L36.57,13.08z M40.31,9.33l0.05-0.08c0.27-0.38,0.8-0.47,1.18-0.2l6.5,4.55c0.38,0.27,0.47,0.8,0.2,1.18l-0.05,0.08 c-0.27,0.38-0.8,0.47-1.18,0.2l-6.5-4.55C40.14,10.24,40.05,9.71,40.31,9.33L40.31,9.33z M32.85,16.73l0.05-0.08 c0.27-0.38,0.8-0.47,1.18-0.2l6.5,4.55c0.38,0.27,0.47,0.8,0.2,1.18l-0.05,0.08c-0.27,0.38-0.8,0.47-1.18,0.2l-6.5-4.55 C32.67,17.64,32.58,17.11,32.85,16.73L32.85,16.73z"/>
+                      </g>
+                      </svg>`},
+]
 
 
 const navItems = [
@@ -606,8 +718,44 @@ function createAccommodation(accommodation) {
 }
 
  
-
-
+function viewRoom(unitId){
+    const roomRef = ref(database, 'unit');
+    let room = {};
+    onValue(roomRef, (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((data) => {
+                if(data.key === unitId){
+                    room = {
+                        accommodationId: data.val().accommodationID,
+                        amenities: data.val().amenities,
+                        availability: data.val().availability,
+                        capacity: data.val().capacity,
+                        price: data.val().price,
+                        unitId: data.val().unitID,
+                        unitNumber: data.val().unitNumber,
+                        unitType: data.val().unitType
+                    };
+                    
+                    alert("jd");
+                    //console.log(room);
+                    if(localStorage.getItem('roomData')){
+                        localStorage.removeItem('roomData');
+                    } 
+                    localStorage.setItem('roomData', JSON.stringify(room));
+                    window.location.href = 'room.html';
+                }
+            });
+        } else {
+            console.log('No rooms found');
+        }
+    }, (error) => {
+        console.error('Error fetching data:', error);
+    });
+}
+function setUpRoom(room){
+    window.location.href = 'room.html';
+   
+}
 let isSubmitting = false;
 
 function logInAcc(event) {
