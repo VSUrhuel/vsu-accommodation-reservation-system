@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
         viewAccommodations();
 
+        
+
         const signInBtn = document.getElementById('signInBtn');
         if (signInBtn) {
             signInBtn.addEventListener('click', function() {
@@ -62,6 +64,8 @@ document.addEventListener('DOMContentLoaded', function(){
                 window.location.href = 'index.html';
             });
         }
+
+       
 
         if (localStorage.getItem('loggedIn') === 'true') {
             document.querySelector('#loginSigninBtn').style.display = 'none';
@@ -248,6 +252,40 @@ document.addEventListener('DOMContentLoaded', function(){
             }
         }
     }
+    function handleRoomPage() {
+        createUserCard();
+        document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
+
+        if (localStorage.getItem('loggedIn') === 'true') {
+            document.querySelector('#loginSigninBtn').style.display = 'none';
+            document.querySelector('#userCard').style.display = 'block';
+            const email = localStorage.getItem('email');
+            const userRef = ref(database, 'user');
+    
+            onValue(userRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((data) => {
+                        if (data.val().email === email) {
+                            document.getElementById('profileName').textContent = `${data.val().firstName} ${data.val().lastName}`;
+                            document.getElementById('profileEmail').textContent = data.val().email;
+                        }
+                    });
+                }
+            }, (error) => {
+                console.error('Error fetching user data:', error);
+            }); 
+            
+        } else {
+            document.querySelector('#userCard').style.display = 'none';
+        }
+
+        if (localStorage.getItem('signOut') === 'true') {
+            safeRemoveItem('loggedIn');
+            safeRemoveItem('email');
+            safeRemoveItem('signOut');
+            window.location.href = 'index.html';
+        }
+    }
     if (document.body.classList.contains('index-page')) {
         handleIndexPage();
     } else if (document.body.classList.contains('login-page')) {
@@ -256,6 +294,8 @@ document.addEventListener('DOMContentLoaded', function(){
         handleSignInPage();
     } else if(document.body.classList.contains('profile-page')) {
         handleProfilePage();
+    } else if(document.body.classList.contains('room-page')) {
+        handleRoomPage();
     }
 })
 
@@ -268,6 +308,7 @@ function viewAccommodations() {
             accommodations = []; // Clear the array to avoid duplicates
             snapshot.forEach((data) => {
                 const acc = {
+                    id: data.key,
                     src: data.val().src,
                     name: data.val().accommodationName,
                     location: data.val().location,
@@ -277,6 +318,14 @@ function viewAccommodations() {
             });
             // Update the DOM after processing all data
             document.getElementById('accommodations').innerHTML = accommodations.map(createAccommodation).join('');
+
+            document.querySelectorAll('.dynamic-button').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const accommodationId = event.currentTarget.getAttribute('data-id');
+                    alert(`Button clicked for accommodation ID: ${accommodationId}`);
+                    // Add your event handling logic here
+                });
+            });
         } else {
             console.log('No accommodations found');
         }
@@ -545,7 +594,7 @@ function createAccommodation(accommodation) {
                     </a>
                     <div class="flex items-center justify-between mt-2">
                         <span class="text-sm font-bold text-gray-900 dark:text-white">from ${accommodation.price}</span>
-                        <button>
+                        <button class="dynamic-button" data-id=${accommodation.id}>
                             <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1"/>
                             </svg>
