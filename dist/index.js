@@ -1,7 +1,8 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';  
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
+//import DateRangePicker from '/node_modules/flowbite-datepicker';
 import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js';
 import { getDatabase, ref, set, onValue, update } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js';
-        // Your web app's Firebase configuration
+// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBYOi_Y3now8wDYR1SrqMkMDqdEh4VsZgI",
     authDomain: "accommodation-reservatio-f8432.firebaseapp.com",
@@ -13,37 +14,37 @@ const firebaseConfig = {
     measurementId: "G-35LFVPDW3F"
 };
 
-        // Initialize Firebase
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
 var userEmail = '';
 
-document.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded', function () {
     //document.getElementById('scenic-views').innerHTML = scenicViews.map(createScenicView).join('');
 
     function handleIndexPage() {
         createUserCard();
         document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
-        
+
         document.getElementById('carousel-items').innerHTML = carouselItems.map(createCarouselItem).join('');
         document.getElementById('table-content').innerHTML = tableContent.map(createTableRow).join('');
-        
+
 
         viewAccommodations();
 
-        
+
 
         const signInBtn = document.getElementById('signInBtn');
         if (signInBtn) {
-            signInBtn.addEventListener('click', function() {
+            signInBtn.addEventListener('click', function () {
                 window.location.href = 'signup.html';
             });
         }
         const logInBtn = document.getElementById('logInBtn');
         if (logInBtn) {
-            logInBtn.addEventListener('click', function() {
+            logInBtn.addEventListener('click', function () {
                 window.location.href = 'login.html';
             });
         }
@@ -57,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         const signOutBtn = document.getElementById('signOutBtn');
         if (signOutBtn) {
-            signOutBtn.addEventListener('click', function() {
+            signOutBtn.addEventListener('click', function () {
                 safeRemoveItem('loggedIn');
                 safeRemoveItem('email');
                 safeRemoveItem('signOut');
@@ -65,14 +66,14 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         }
 
-       
+
 
         if (localStorage.getItem('loggedIn') === 'true') {
             document.querySelector('#loginSigninBtn').style.display = 'none';
             document.querySelector('#userCard').style.display = 'block';
             const email = localStorage.getItem('email');
             const userRef = ref(database, 'user');
-    
+
             onValue(userRef, (snapshot) => {
                 if (snapshot.exists()) {
                     snapshot.forEach((data) => {
@@ -84,8 +85,8 @@ document.addEventListener('DOMContentLoaded', function(){
                 }
             }, (error) => {
                 console.error('Error fetching user data:', error);
-            }); 
-            
+            });
+
         } else {
             document.querySelector('#userCard').style.display = 'none';
         }
@@ -97,21 +98,21 @@ document.addEventListener('DOMContentLoaded', function(){
             window.location.href = 'index.html';
         }
     }
-    
+
     function handleLoginPage() {
         const loginForm = document.getElementById("logInForm");
         if (loginForm) {
             loginForm.addEventListener('submit', logInAcc);
-        } 
+        }
         document.querySelector('#logInBtn').addEventListener('click', logInAcc);
     }
 
-    function handleSignInPage(){
+    function handleSignInPage() {
         const signInForm = document.querySelector('#signInForm');
-        if(signInForm){
+        if (signInForm) {
             signInForm.addEventListener('submit', createAccount);
         }
-       // document.querySelector('#createAccount').addEventListener('submit', createAccount);
+        // document.querySelector('#createAccount').addEventListener('submit', createAccount);
         document.getElementById('googleSignIn').addEventListener('click', signInGoogle);
         document.getElementById('fbSignIn').addEventListener('click', signInFacebook);
     }
@@ -166,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 snapshot.forEach((data) => {
                     if (data.val().email === email) {
                         document.getElementById('profileName').textContent = `${data.val().firstName} ${data.val().lastName}`;
-                        
+
                         document.getElementById('profileName1').textContent = `${data.val().firstName} ${data.val().lastName}`;
                         document.getElementById('profileEmail').textContent = data.val().email;
                         document.getElementById('profileEmailInfo').textContent = data.val().email;
@@ -184,23 +185,23 @@ document.addEventListener('DOMContentLoaded', function(){
 
         const signOutBtn = document.getElementById('signOutBtn');
         if (signOutBtn) {
-            signOutBtn.addEventListener('click', function() {
-                
+            signOutBtn.addEventListener('click', function () {
+
                 localStorage.setItem('signOut', 'true');
-            
+
                 // Redirect to the home page
                 window.location.href = 'index.html';
             });
         }
-        
+
         const editProfile = document.getElementById('editProfile');
         if (editProfile) {
-            editProfile.addEventListener('click', function() {
+            editProfile.addEventListener('click', function () {
                 //HEREREEEEEEE
-                
+
                 document.getElementById('profileInfo').style.display = 'none';
                 document.getElementById('editProfileForm').style.display = 'block';
-               
+
                 onValue(userRef, (snapshot) => {
                     if (snapshot.exists()) {
                         snapshot.forEach((data) => {
@@ -208,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function(){
                                 document.getElementById('editEmail').textContent = data.val().email;
                                 document.getElementById('editPhoneNumber').value = data.val().phoneNumber;
                                 document.getElementById('editBirthday').value = data.val().birthday;
-        
+
                                 document.getElementById('editFirstName').value = data.val().firstName;
                                 document.getElementById('editLastName').value = data.val().lastName;
                             }
@@ -220,11 +221,11 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         }
 
-      
+
 
         const profileForm = document.getElementById('profileForm');
         if (profileForm) {
-            profileForm.addEventListener('submit', function(evet) {
+            profileForm.addEventListener('submit', function (evet) {
                 event.preventDefault();
                 const newPhoneNumber = document.getElementById('editPhoneNumber').value;
                 const newBirthday = document.getElementById('editBirthday').value;
@@ -243,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 window.location.href = 'profile.html';
             });
 
-        
+
             if (localStorage.getItem('signOut') === 'true') {
                 safeRemoveItem('loggedIn');
                 safeRemoveItem('email');
@@ -261,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function(){
             document.querySelector('#userCard').style.display = 'block';
             const email = localStorage.getItem('email');
             const userRef = ref(database, 'user');
-    
+
             onValue(userRef, (snapshot) => {
                 if (snapshot.exists()) {
                     snapshot.forEach((data) => {
@@ -273,28 +274,28 @@ document.addEventListener('DOMContentLoaded', function(){
                 }
             }, (error) => {
                 console.error('Error fetching user data:', error);
-            }); 
-            
+            });
+
         } else {
             document.querySelector('#userCard').style.display = 'none';
         }
 
-        if(localStorage.getItem('roomData')){
+        if (localStorage.getItem('roomData')) {
             const room = JSON.parse(localStorage.getItem('roomData'));
             var accomodation = '';
-            if(room.accommodationId  === 'ACC001') {
+            if (room.accommodationId === 'ACC001') {
                 accomodation = 'Apartlle';
-            } else if(room.accommodationId === 'ACC002') {
+            } else if (room.accommodationId === 'ACC002') {
                 accomodation = 'Seafront Suite';
-            } else if(room.accommodationId  === 'ACC003') {
+            } else if (room.accommodationId === 'ACC003') {
                 accomodation = 'Balay Alumni';
             } else {
                 accomodation = 'Hostel';
             }
             document.getElementById('roomTitle').textContent = `Book ${accomodation}`;
             document.getElementById('accName').textContent = `${accomodation}`;
-            document.getElementById('roomType').textContent = room.unitType;    
-            document.getElementById('pricePerNight').textContent = `${room.price.toLocaleString('en-US', {style: 'currency', currency: 'PHP'})}`;
+            document.getElementById('roomType').textContent = room.unitType;
+            document.getElementById('pricePerNight').textContent = `PHP ${room.price.toLocaleString('en-US')}`;
 
             const amenitiesList = document.getElementById('amenities');
 
@@ -303,28 +304,37 @@ document.addEventListener('DOMContentLoaded', function(){
             console.log(room.amenities);
             var i = 0;
             room.amenities.forEach((x) => {
-                
+
                 const amenity = document.createElement('li');
-                if(i==0){
+                if (i == 0) {
                     amenity.className = 'inline-flex items-center';
                     i++;
                 } else {
                     amenity.className = 'inline-flex items-center ml-6';
                 }
-            
+
                 // Find the corresponding amenity object
                 const amenityData = amenities.find(a => a.name === x);
                 if (amenityData) {
                     amenity.innerHTML = amenityData.svg;
-            
+
                     const title = document.createElement('p');
                     title.className = 'pl-2';
                     title.textContent = x;
-            
+
                     amenity.appendChild(title);
                     amenitiesList.appendChild(amenity);
                 }
             });
+
+            const datepickerStart = document.getElementById('datepicker-range-start');
+            const today = new Date().toLocaleDateString();
+            datepickerStart.setAttribute(`datepicker-min-date`, today);
+
+            const datepickerEnd = document.getElementById('datepicker-range-end');
+            datepickerEnd.setAttribute(`datepicker-min-date`, today);
+           
+    
         }
 
         if (localStorage.getItem('signOut') === 'true') {
@@ -338,11 +348,11 @@ document.addEventListener('DOMContentLoaded', function(){
         handleIndexPage();
     } else if (document.body.classList.contains('login-page')) {
         handleLoginPage();
-    } else if(document.body.classList.contains('sigin-page')) {
+    } else if (document.body.classList.contains('sigin-page')) {
         handleSignInPage();
-    } else if(document.body.classList.contains('profile-page')) {
+    } else if (document.body.classList.contains('profile-page')) {
         handleProfilePage();
-    } else if(document.body.classList.contains('room-page')) {
+    } else if (document.body.classList.contains('room-page')) {
         handleRoomPage();
     }
 })
@@ -373,7 +383,7 @@ function viewAccommodations() {
                     const button = event.target.closest('.dynamic-button');
                     const accommodationId = button.getAttribute('data-id');
                     alert(`Button clicked for accommodation ID: ${accommodationId}`);
-                    viewRoom('UNT001');
+                    viewRoom('UNT011');
                     // Add your event handling logic here
                 }
             });
@@ -419,7 +429,7 @@ function populateProfileInfo(userData) {
 function setupSignOutButton() {
     const signOutBtn = document.getElementById('signOutBtn');
     if (signOutBtn) {
-        signOutBtn.addEventListener('click', function() {
+        signOutBtn.addEventListener('click', function () {
             localStorage.setItem('signOut', 'true');
             window.location.href = 'index.html';
         });
@@ -429,7 +439,7 @@ function setupSignOutButton() {
 function setupEditProfileButton(userRef, email) {
     const editProfile = document.getElementById('editProfile');
     if (editProfile) {
-        editProfile.addEventListener('click', function() {
+        editProfile.addEventListener('click', function () {
             document.getElementById('profileInfo').style.display = 'none';
             document.getElementById('editProfileForm').style.display = 'block';
 
@@ -458,7 +468,8 @@ function handleSignOutRedirect() {
 }
 
 const amenities = [
-    { name: "Free Wifi", svg: `<svg
+    {
+        name: "Free Wifi", svg: `<svg
                       version="1.1"
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
@@ -473,7 +484,8 @@ const amenities = [
                         />
                       </g>
                     </svg>` },
-    { name: "Air Conditioning", svg: `<svg
+    {
+        name: "Air Conditioning", svg: `<svg
                       version="1.1"
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
@@ -488,7 +500,8 @@ const amenities = [
                         />
                       </g>
                     </svg>`},
-    { name: "Free TV", svg: `<svg
+    {
+        name: "Free TV", svg: `<svg
                       version="1.1"
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
@@ -504,7 +517,8 @@ const amenities = [
                         />
                       </g>
                     </svg>`},
-    { name: "Hot and Cold Shower", svg: `<svg 
+    {
+        name: "Hot and Cold Shower", svg: `<svg 
         version="1.1"
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
@@ -517,6 +531,43 @@ const amenities = [
                       <path class="st0" d="M28.38,20.1l0.05-0.08c0.27-0.38,0.8-0.47,1.18-0.2l6.5,4.55c0.38,0.27,0.47,0.8,0.2,1.18l-0.05,0.08 c-0.27,0.38-0.8,0.47-1.18,0.2l-6.5-4.55C28.21,21.02,28.12,20.48,28.38,20.1L28.38,20.1z M60.91,89.12v28.25 c0,3.71-2.7,5.51-6,5.51h0c-3.3,0-6-1.8-6-5.51v-27.6h-3.6v27.6c0,3.71-2.7,5.51-6,5.51h0c-3.3,0-6-1.8-6-5.51V89.12 c-0.15-0.24-0.25-0.54-0.25-0.86V64.45l0-0.08l-16.8-8.53c-2.33-1.18-3.35-3.93-2.42-6.31l6.22-17.71c0.91-2.62,3.78-4,6.4-3.09 c2.62,0.91,4,3.78,3.09,6.4l-4.82,13.73l12.98,6.59c0.18,0.09,0.34,0.19,0.5,0.29c4.72-2.85,11.71-3.24,16.73-1.41l12.38-7.56 l-5.67-13.93c-1.04-2.58,0.2-5.51,2.78-6.56c2.58-1.04,5.51,0.2,6.56,2.78l7.28,17.88c0.91,2.24,0.08,4.88-2.05,6.18l-15.07,9.21 v25.93C61.16,88.57,61.07,88.87,60.91,89.12L60.91,89.12z M47.12,29.03c6.03,0,10.91,4.89,10.91,10.91 c0,6.03-4.89,10.91-10.91,10.91c-6.03,0-10.91-4.89-10.91-10.91C36.2,33.92,41.09,29.03,47.12,29.03L47.12,29.03z M0,10.28 c2.92-3.81,17.16-6.74,20.74-4.32c-2.12,3.71-1.85,7.48,1.16,11.33c-0.38,0.63-0.35,1.3,0.08,2.04l0.95,1.09 c0.38,0.38,0.85,0.42,1.46-0.08l14.45-14.6c0.39-0.47,0.32-0.87-0.14-1.24c-1.03-1.25-1.15-1.47-2.97-1.16 c-4.05-2.64-7.91-3.1-11.55-1.01C17.21-1.69,6.21-0.22,0,4.51V10.28L0,10.28z M36.57,13.08l0.05-0.08c0.27-0.38,0.8-0.47,1.18-0.2 l6.5,4.55c0.38,0.27,0.47,0.8,0.2,1.18l-0.05,0.08c-0.27,0.38-0.8,0.47-1.18,0.2l-6.5-4.55C36.39,13.99,36.3,13.46,36.57,13.08 L36.57,13.08z M40.31,9.33l0.05-0.08c0.27-0.38,0.8-0.47,1.18-0.2l6.5,4.55c0.38,0.27,0.47,0.8,0.2,1.18l-0.05,0.08 c-0.27,0.38-0.8,0.47-1.18,0.2l-6.5-4.55C40.14,10.24,40.05,9.71,40.31,9.33L40.31,9.33z M32.85,16.73l0.05-0.08 c0.27-0.38,0.8-0.47,1.18-0.2l6.5,4.55c0.38,0.27,0.47,0.8,0.2,1.18l-0.05,0.08c-0.27,0.38-0.8,0.47-1.18,0.2l-6.5-4.55 C32.67,17.64,32.58,17.11,32.85,16.73L32.85,16.73z"/>
                       </g>
                       </svg>`},
+    {
+        name: "bed", svg: `<svg  version="1.1"
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                      class="h-4 w-auto inline"
+                      viewBox="0 0 122.88 83.06"
+                      style="enable-background: new 0 0 122.88 83.06"
+                      xml:space="preserve"><g><path class="st0" d="M3.36,0h7.3c1.85,0,3.36,1.56,3.36,3.36v43.77h37.33L61.99,9.69h41.85c10.47,0,19.04,8.59,19.04,19.04v19.04 h-0.02c0.01,0.12,0.02,0.24,0.02,0.37v30.49h-14.02V64.32H14.02v13.66H0V3.36C0,1.51,1.51,0,3.36,0L3.36,0z M35.44,10.37 c8.62,0,15.61,6.99,15.61,15.61c0,8.62-6.99,15.61-15.61,15.61c-8.62,0-15.61-6.99-15.61-15.61 C19.83,17.36,26.82,10.37,35.44,10.37L35.44,10.37z"/></g></svg>`},
+    {
+        name: "Home Entertainment", svg: `<svg version="1.1"
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                      class="h-4 w-auto inline"
+                      viewBox="0 0 122.88 83.06"
+                      style="enable-background: new 0 0 122.88 83.06"
+                      xml:space="preserve"><g><path d="M6.32,0v6.22h12.22V0h6.32v14.88h73.15V0h6.32v6.22h12.22V0h6.32v110.35h-6.32v-7.19h-12.22v7.19h-6.32V94.79H24.87v15.56 h-6.32v-7.19H6.32v7.19H0V0H6.32L6.32,0z M73.58,60.81c0.93-0.16,1.81-0.13,2.58,0.05v-18.1l-19.16,5.5v21.02 c0.01,0.11,0.02,0.23,0.02,0.35c0,0,0,0,0,0c0,2.83-2.97,5.64-6.63,6.27c-3.66,0.63-6.63-1.15-6.63-3.98 c0-2.83,2.97-5.64,6.63-6.27c1.38-0.24,2.66-0.13,3.72,0.24l0-25.88h0.16l24.79-5.68v29.15c0.04,0.21,0.07,0.43,0.07,0.65 c0,0,0,0,0,0c0,2.36-2.48,4.71-5.54,5.24c-3.06,0.53-5.54-0.96-5.54-3.33C68.04,63.68,70.52,61.33,73.58,60.81L73.58,60.81 L73.58,60.81z M98.01,21.2H24.87v67.27h73.15V21.2L98.01,21.2z M116.56,96.84v-11.8h-12.22v11.8H116.56L116.56,96.84z M116.56,78.72v-11.8h-12.22v11.8H116.56L116.56,78.72z M116.56,60.59v-11.8h-12.22v11.8H116.56L116.56,60.59z M116.56,42.47v-11.8 h-12.22v11.8H116.56L116.56,42.47z M116.56,24.35v-11.8h-12.22v11.8H116.56L116.56,24.35z M18.54,96.84v-11.8H6.32v11.8H18.54 L18.54,96.84z M18.54,78.72v-11.8H6.32v11.8H18.54L18.54,78.72z M18.54,60.59v-11.8H6.32v11.8H18.54L18.54,60.59z M18.54,42.47 v-11.8H6.32v11.8H18.54L18.54,42.47z M18.54,24.35v-11.8H6.32v11.8H18.54L18.54,24.35z"/></g></svg>`},
+    {
+        name: "Refrigerator", svg: `<svg version="1.1"
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                      class="h-4 w-auto inline"
+                      viewBox="0 0 122.88 83.06"
+                      style="enable-background: new 0 0 122.88 83.06"
+                      xml:space="preserve"><g><path d="M6.14,0H65.4c1.69,0,3.23,0.69,4.34,1.8c1.11,1.11,1.8,2.65,1.8,4.34v29.67v73.73c0,1.69-0.69,3.23-1.8,4.34 c-1.11,1.11-2.65,1.8-4.34,1.8h-4.89v2.72c0,2.47-2.02,4.49-4.49,4.49l0,0c-2.47,0-4.49-2.02-4.49-4.49v-2.72H20.17v2.72 c0,2.47-2.02,4.49-4.49,4.49l0,0c-2.47,0-4.49-2.02-4.49-4.49v-2.72H6.14c-1.69,0-3.23-0.69-4.34-1.8c-1.11-1.11-1.8-2.65-1.8-4.34 V35.81V6.14C0,4.45,0.69,2.91,1.8,1.8C2.91,0.69,4.45,0,6.14,0L6.14,0z M10.2,44.89c0-1.34,1.09-2.43,2.43-2.43 c1.34,0,2.43,1.09,2.43,2.43v20.4c0,1.34-1.09,2.43-2.43,2.43c-1.34,0-2.43-1.09-2.43-2.43V44.89L10.2,44.89z M10.2,10.39 c0-1.34,1.09-2.43,2.43-2.43c1.34,0,2.43,1.09,2.43,2.43v15.15c0,1.34-1.09,2.43-2.43,2.43c-1.34,0-2.43-1.09-2.43-2.43V10.39 L10.2,10.39z M4.87,33.37h61.81V6.14c0-0.35-0.14-0.67-0.38-0.9c-0.23-0.23-0.55-0.38-0.9-0.38H6.14c-0.35,0-0.67,0.14-0.9,0.38 c-0.23,0.23-0.38,0.55-0.38,0.9V33.37L4.87,33.37z M66.67,38.24H4.87v71.29c0,0.35,0.14,0.67,0.38,0.9 c0.23,0.23,0.55,0.38,0.9,0.38H65.4c0.35,0,0.67-0.14,0.9-0.38c0.23-0.23,0.38-0.55,0.38-0.9V38.24L66.67,38.24z"/></g></svg>`},
+    {
+        name: "Fan", svg: `<svg version="1.1"
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                      class="h-4 w-auto inline"
+                      viewBox="0 0 122.88 83.06"
+                      style="enable-background: new 0 0 122.88 83.06"
+                      xml:space="preserve"><g><path class="st0" d="M89.84,122.88H19c0.68-8.61,5.08-15.16,11.38-19.62c-5.37-2.65-10.25-6.16-14.44-10.36 C6.09,83.05,0,69.45,0,54.42c0-15.03,6.09-28.63,15.94-38.48C25.79,6.09,39.39,0,54.42,0C69.45,0,83.05,6.09,92.9,15.94 c9.85,9.85,15.94,23.45,15.94,38.48c0,15.03-6.09,28.63-15.94,38.48c-4.15,4.15-8.97,7.64-14.28,10.28 C84.82,107.62,89.15,114.18,89.84,122.88L89.84,122.88z M58.75,42.7l0.15,0.02c0.32-0.41,0.66-0.82,1-1.22 c0.59-0.69,1.21-1.36,1.86-2.01c2.66-2.67,5.3-4.15,7.92-5.63c1.71-0.96,3.41-1.91,5.02-3.16c0.58-0.45,1-0.91,1.3-1.38 c0.51-0.82,0.64-1.7,0.49-2.58c-0.17-0.99-0.69-2-1.41-2.92c-0.79-1.02-1.82-1.93-2.93-2.63c-0.99-0.63-2.1-1.15-3.24-1.58 c-1.16-0.44-2.37-0.78-3.57-1.07c-1.1-0.26-2.18-0.44-3.25-0.54c-1.11-0.11-2.21-0.16-3.31-0.15c-3.72,0.03-6.81,0.73-9.24,1.95 c-2.22,1.12-3.89,2.68-5,4.58c-1.12,1.93-1.68,4.23-1.66,6.79c0.03,3.29,1.01,7,2.99,10.93c0.34,0.67,0.75,1.25,1.22,1.76 c0.18,0.2,0.37,0.39,0.57,0.57c2.09-1.44,4.63-2.29,7.36-2.29C56.31,42.15,57.57,42.35,58.75,42.7L58.75,42.7z M53.24,46.2 c-1.64,0.28-3.1,0.91-4.38,1.87c-0.16,0.14-0.32,0.29-0.47,0.44c-1.69,1.69-2.74,4.03-2.74,6.62s1.05,4.93,2.74,6.62 c0.35,0.35,0.72,0.67,1.12,0.95c0.23,0.15,0.46,0.29,0.7,0.43l0,0c0.1,0.06,0.2,0.13,0.29,0.2c1.34,0.74,2.88,1.16,4.51,1.16 c2.59,0,4.93-1.05,6.62-2.74c1.69-1.69,2.74-4.03,2.74-6.62s-1.05-4.93-2.74-6.62c-1.03-1.03-2.3-1.82-3.73-2.29 C56.2,45.96,54.64,45.96,53.24,46.2L53.24,46.2z M44.99,46.88c-0.2-0.19-0.39-0.39-0.58-0.6c-0.68-0.75-1.29-1.6-1.77-2.55 c-2.23-4.43-3.34-8.69-3.37-12.52c-0.03-3.22,0.7-6.14,2.14-8.62c1.46-2.51,3.63-4.56,6.49-6c2.91-1.47,6.54-2.3,10.84-2.33 c1.24-0.01,2.47,0.04,3.69,0.16c1.26,0.13,2.5,0.33,3.72,0.61c1.32,0.31,2.68,0.7,4.02,1.21c1.35,0.51,2.67,1.13,3.89,1.9 c1.45,0.91,2.81,2.12,3.87,3.48c1.06,1.37,1.83,2.92,2.11,4.52c0.3,1.71,0.04,3.46-1,5.1c-0.52,0.82-1.22,1.6-2.15,2.32 c-1.85,1.43-3.65,2.45-5.45,3.46c-2.41,1.36-4.84,2.72-7.13,5.02c-0.58,0.58-1.14,1.19-1.67,1.82c-0.14,0.16-0.28,0.33-0.41,0.49 c0.71,0.47,1.36,1.01,1.96,1.61c1.9,1.9,3.22,4.4,3.65,7.18c0.34-0.04,0.68-0.07,1.03-0.08c1.01-0.04,2.04,0.03,3.09,0.27 c4.84,1.12,8.82,2.99,11.79,5.41c2.49,2.03,4.27,4.46,5.26,7.17c1,2.72,1.18,5.7,0.46,8.81c-0.74,3.19-2.41,6.51-5.13,9.83l0,0 c-0.78,0.96-1.61,1.87-2.48,2.73c-0.9,0.88-1.84,1.71-2.85,2.46c-1.08,0.81-2.25,1.61-3.5,2.32c-1.26,0.72-2.59,1.34-3.95,1.78 c-1.63,0.53-3.42,0.8-5.14,0.74c-1.73-0.06-3.42-0.46-4.83-1.27c-1.52-0.87-2.7-2.19-3.3-4.03c-0.3-0.91-0.44-1.95-0.4-3.12 c0.08-2.33,0.45-4.37,0.83-6.41c0.5-2.72,1-5.46,0.7-8.7c-0.07-0.78-0.18-1.59-0.33-2.44c-0.06-0.37-0.13-0.74-0.21-1.1 c-1.22,0.38-2.51,0.58-3.86,0.58c-1.62,0-3.17-0.3-4.61-0.84c-0.08,0.19-0.16,0.38-0.25,0.57c-0.42,0.91-0.96,1.8-1.66,2.63 c-3.2,3.79-6.68,6.47-10.2,8c-2.95,1.29-5.92,1.77-8.77,1.41c-2.88-0.36-5.61-1.56-8.06-3.63c-2.49-2.11-4.68-5.11-6.39-9.05 c-0.5-1.14-0.93-2.29-1.3-3.46c-0.37-1.19-0.67-2.41-0.89-3.67c-0.23-1.33-0.4-2.73-0.46-4.17c-0.06-1.44,0-2.9,0.22-4.32 c0.27-1.7,0.85-3.42,1.68-4.92c0.85-1.52,1.97-2.83,3.33-3.71c1.47-0.95,3.18-1.4,5.09-1.09c0.96,0.15,1.95,0.5,2.97,1.07 c2.03,1.13,3.68,2.4,5.32,3.67c2.19,1.69,4.39,3.38,7.42,4.59c0.75,0.3,1.53,0.58,2.32,0.83c0.5,0.16,1.01,0.3,1.54,0.44 C42.75,50.37,43.69,48.47,44.99,46.88L44.99,46.88z M68.12,56.72c-0.24,1.72-0.81,3.38-1.73,4.96c-0.98,1.69-2.33,3.28-4.07,4.77 c0.11,0.52,0.21,1.04,0.3,1.55c0.15,0.86,0.27,1.77,0.36,2.72c0.35,3.74-0.2,6.71-0.74,9.68c-0.35,1.92-0.7,3.83-0.77,5.88 c-0.02,0.73,0.06,1.36,0.24,1.9c0.3,0.92,0.9,1.58,1.66,2.02c0.87,0.5,1.97,0.75,3.15,0.79c1.29,0.04,2.66-0.17,3.91-0.58 c1.13-0.37,2.23-0.88,3.29-1.48c1.07-0.61,2.12-1.32,3.1-2.06c0.9-0.68,1.73-1.4,2.5-2.15c0.79-0.78,1.53-1.59,2.22-2.44l0,0l0,0 c2.36-2.88,3.8-5.7,4.41-8.35c0.56-2.42,0.43-4.71-0.33-6.78c-0.76-2.08-2.17-3.98-4.16-5.6c-2.55-2.08-6.03-3.71-10.31-4.69 c-0.72-0.17-1.44-0.22-2.14-0.19C68.7,56.66,68.41,56.69,68.12,56.72L68.12,56.72z M47.17,65.46c-1.4-1-2.6-2.25-3.58-3.77 c-1.05-1.63-1.84-3.56-2.37-5.79c-0.5-0.14-1.01-0.28-1.51-0.44c-0.86-0.27-1.72-0.58-2.59-0.92c-3.49-1.4-5.89-3.25-8.28-5.09 c-1.54-1.19-3.08-2.37-4.87-3.37c-0.64-0.36-1.24-0.57-1.79-0.66c-0.96-0.15-1.82,0.07-2.56,0.55c-0.85,0.55-1.57,1.41-2.14,2.44 c-0.63,1.13-1.07,2.44-1.28,3.73c-0.19,1.17-0.23,2.39-0.18,3.61c0.05,1.23,0.21,2.48,0.42,3.7c0.19,1.09,0.45,2.16,0.78,3.2 c0.33,1.06,0.72,2.09,1.16,3.09c1.49,3.41,3.34,5.98,5.42,7.74c1.89,1.6,3.98,2.52,6.17,2.8c2.22,0.28,4.55-0.11,6.9-1.13 c3.01-1.31,6.05-3.67,8.89-7.03c0.47-0.56,0.85-1.17,1.14-1.81c0.13-0.27,0.24-0.54,0.33-0.82L47.17,65.46L47.17,65.46z M90.35,18.49C81.15,9.3,68.45,3.61,54.42,3.61c-14.03,0-26.73,5.69-35.93,14.88C9.3,27.69,3.61,40.39,3.61,54.42 c0,14.03,5.69,26.73,14.88,35.93c9.19,9.19,21.9,14.88,35.93,14.88c14.03,0,26.73-5.69,35.93-14.88 c9.19-9.19,14.88-21.9,14.88-35.93C105.23,40.39,99.54,27.69,90.35,18.49L90.35,18.49z"/></g></svg>`},
+    {}
 ]
 
 
@@ -717,14 +768,14 @@ function createAccommodation(accommodation) {
         </div>`;
 }
 
- 
-function viewRoom(unitId){
+
+function viewRoom(unitId) {
     const roomRef = ref(database, 'unit');
     let room = {};
     onValue(roomRef, (snapshot) => {
         if (snapshot.exists()) {
             snapshot.forEach((data) => {
-                if(data.key === unitId){
+                if (data.key === unitId) {
                     room = {
                         accommodationId: data.val().accommodationID,
                         amenities: data.val().amenities,
@@ -735,12 +786,12 @@ function viewRoom(unitId){
                         unitNumber: data.val().unitNumber,
                         unitType: data.val().unitType
                     };
-                    
+
                     alert("jd");
                     //console.log(room);
-                    if(localStorage.getItem('roomData')){
+                    if (localStorage.getItem('roomData')) {
                         localStorage.removeItem('roomData');
-                    } 
+                    }
                     localStorage.setItem('roomData', JSON.stringify(room));
                     window.location.href = 'room.html';
                 }
@@ -752,9 +803,9 @@ function viewRoom(unitId){
         console.error('Error fetching data:', error);
     });
 }
-function setUpRoom(room){
+function setUpRoom(room) {
     window.location.href = 'room.html';
-   
+
 }
 let isSubmitting = false;
 
@@ -850,11 +901,11 @@ async function createAccount(event) {
     const birthday_picker = document.querySelector('#birthday_picker').value;
     const floating_phone = document.querySelector('#floating_phone').value;
 
-    if(floating_password != floating_repeat_password){
+    if (floating_password != floating_repeat_password) {
         alert("password dint matched");
         return;
     }
-    try{
+    try {
         const newId = await fetchLatestUserId();
         alert(newId);
         const userCredential = await createUserWithEmailAndPassword(auth, floating_email, floating_password);
@@ -877,7 +928,7 @@ async function createAccount(event) {
     } catch (error) {
         console.error('Error creating user:', error);
     }
-    
+
 }
 
 async function fetchLatestUserId() {
