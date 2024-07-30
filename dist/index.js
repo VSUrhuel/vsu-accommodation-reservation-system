@@ -354,6 +354,69 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.href = 'index.html';
         }
     }
+    function handleBookPage() {
+        createUserCard();
+        document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
+
+        if (localStorage.getItem('loggedIn') === 'true') {
+            document.querySelector('#userCard').style.display = 'block';
+            const email = localStorage.getItem('email');
+            const userRef = ref(database, 'user');
+
+            onValue(userRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((data) => {
+                        if (data.val().email === email) {
+                            document.getElementById('profileName').textContent = `${data.val().firstName} ${data.val().lastName}`;
+                            document.getElementById('profileEmail').textContent = data.val().email;
+                        }
+                    });
+                }
+            }, (error) => {
+                console.error('Error fetching user data:', error);
+            });
+
+        } else {
+            document.querySelector('#userCard').style.display = 'none';
+        }
+
+
+        document.getElementById('page2').addEventListener('click', function() { paginationView(2); })
+        document.getElementById('page1').addEventListener('click', function() { paginationView(1); })
+        document.getElementById('page3').addEventListener('click', function() { paginationView(3); })
+        document.getElementById('page4').addEventListener('click', function() { paginationView(4); })
+        document.getElementById('page5').addEventListener('click', function() { paginationView(5); })
+        document.getElementById('page6').addEventListener('click', function() { paginationView(6); })
+
+        let i=0;
+
+        const userRef = ref(database, 'unit');
+        const rooms = document.getElementById('rooms');
+        onValue(userRef, (snapshot) => {
+            if (snapshot.exists()) {
+                snapshot.forEach((data) => {
+                    if (i==4){
+                        return;
+                    }
+                    i++;
+                    let unit = {};
+                    unit.accommodationID = data.val().accommodationID;
+                    unit.amenities = data.val().amenities;
+                    unit.availability = data.val().availability;
+                    unit.capacity = data.val().capacity;
+                    unit.price = data.val().price;
+                    unit.unitID = data.val().unitID;
+                    unit.unitNumber = data.val().unitNumber;
+                    unit.unitType = data.val().unitType;
+                    createRooms(rooms, unit);
+                    console.log(unit);
+                });
+            }
+        })
+        
+        
+        
+    }
     if (document.body.classList.contains('index-page')) {
         handleIndexPage();
     } else if (document.body.classList.contains('login-page')) {
@@ -364,8 +427,55 @@ document.addEventListener('DOMContentLoaded', function () {
         handleProfilePage();
     } else if (document.body.classList.contains('room-page')) {
         handleRoomPage();
+    } else if (document.body.classList.contains('book-page')) {
+        handleBookPage();
+    
     }
 })
+
+function paginationView(pageNum){
+    document.querySelector('#rooms').innerHTML = '';
+    document.querySelector(`page${pageNum}`).innerHTML = 'flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700';
+    
+    let skip = (pageNum-1) * 5;
+    console.log(skip);
+    let i = 0, j=0, stopLoop = false;
+    const userRef = ref(database, 'unit');
+    const rooms = document.getElementById('rooms');
+    onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                if (i < skip) {
+                  i++;
+                  return;
+                }
+                console.log("helo");
+                if(!stopLoop) {
+                    const data = childSnapshot.val();
+                    // now you can access data here
+                    let unit = {};
+                    unit.accommodationID = data.accommodationID;
+                    unit.amenities = data.amenities;
+                    unit.availability = data.availability;
+                    unit.capacity = data.capacity;
+                    unit.price = data.price;
+                    unit.unitID = data.unitID;
+                    unit.unitNumber = data.unitNumber;
+                    unit.unitType = data.unitType;
+                    createRooms(rooms, unit);
+                    console.log(unit);
+                    console.log("inside");
+                    j++;
+                }
+                console.log(stopLoop);
+                if (j > 4) {
+                  stopLoop = true;
+                  return;
+                }
+            });
+        }
+    })
+}
 
 function titleCase(str){
     str = str.toLowerCase().split(' ');
@@ -484,6 +594,215 @@ function handleSignOutRedirect() {
     }
 }
 
+function createRooms(rooms, units) {
+   // rooms.innerHTML = '';
+    let data = units;
+    const innerDiv = document.createElement('div');
+    innerDiv.className = 'my-2 p-3 border-2 border-black h-44 w-full rounded-lg relative';
+    rooms.appendChild(innerDiv);
+
+    const flexDiv = document.createElement('div');
+    flexDiv.className = 'flex flex-wrap h-60';
+    innerDiv.appendChild(flexDiv);
+
+    const img = document.createElement('img');
+    img.src = '/src/hotel-room2.jpg';
+    img.alt = '';
+    img.className = 'rounded-lg object-cover w-60';
+    flexDiv.appendChild(img);
+
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'px-2';
+    flexDiv.appendChild(infoDiv);
+
+    const roomTitle = document.createElement('p');
+    roomTitle.className = 'font-bold';
+    let accommodationName = '';
+    const userRef = ref(database, 'accommodations');
+    onValue(userRef, (snapshot) => {
+        if(snapshot.exists()){
+            snapshot.forEach((x) => {
+                if(x.key === units.accommodationID){
+                    roomTitle.textContent = `${x.val().accommodationName}`;
+                }
+            })
+        }
+    });
+    infoDiv.appendChild(roomTitle);
+
+    const amenitiesTitle = document.createElement('p');
+    amenitiesTitle.className = 'ml-2 mt-2 font-medium text-sm ';
+    amenitiesTitle.textContent = 'Amenities';
+    infoDiv.appendChild(amenitiesTitle);
+
+    const amenitiesContainer = document.createElement('div');
+    amenitiesContainer.className = 'w-96 grid grid-cols-2';
+
+    const leftContainer = document.createElement('div');
+    leftContainer.className = 'w-50';
+
+    const amenitiesList = document.createElement('ul');
+    amenitiesList.className = 'ml-4 block font-light text-xsm text-gray-500';
+    let limit = units.amenities.length > 3 ? 3 : units.amenities.length;
+    for(let i=0; i<limit; i++) {
+        const amenity = document.createElement('li');
+        amenity.className = "inline-flex items-center";
+        let amenityName = units.amenities[i];
+        let amenityData = amenities.find(a => a.name === amenityName);
+
+                // Handle special case for 'bed'
+        if (amenityName.includes('bed')) {
+            amenityData = amenities.find(a => a.name === 'bed');
+        }
+               
+        if (amenityData) {
+            amenity.innerHTML = amenityData.svg;
+            const title = document.createElement('p');
+            title.className = 'pl-2 font-light text-sm';
+            if(amenityName.includes('bed')){
+                title.textContent = titleCase(amenityName);
+            } else {
+                title.textContent = amenityName;
+            }
+
+            amenity.appendChild(title);
+            amenitiesList.appendChild(amenity);
+        }
+    }
+    leftContainer.appendChild(amenitiesList);
+
+    const rightContainer = document.createElement('div');
+    rightContainer.className = 'w-50';
+    const amenitiesList2 = document.createElement('ul');
+    amenitiesList2.className = 'ml-4 block font-light text-xsm text-gray-500';
+    if(units.amenities.length > 3) {
+        for(let i=3; i<units.amenities.length; i++) {
+            const amenity = document.createElement('li');
+            amenity.className = "inline-flex items-center";
+            let amenityName = units.amenities[i];
+            let amenityData = amenities.find(a => a.name === amenityName);
+
+            if (amenityName.includes('bed')) {
+                amenityData = amenities.find(a => a.name === 'bed');
+            }
+
+            if (amenityData) {
+                amenity.innerHTML = amenityData.svg;
+                const title = document.createElement('p');
+                title.className = 'pl-2 font-light text-sm';
+                if(amenityName.includes('bed')){
+                    title.textContent = titleCase(amenityName);
+                } else {
+                    title.textContent = amenityName;
+                }
+    
+                amenity.appendChild(title);
+                amenitiesList2.appendChild(amenity);
+            }
+
+        }
+    }
+    rightContainer.appendChild(amenitiesList2)
+
+    amenitiesContainer.appendChild(leftContainer);
+    amenitiesContainer.appendChild(rightContainer);
+
+    const container1 = document.createElement('div');
+    container1.className = "absolute bottom-0 mb-4 ml-2 block block-wrap";
+
+    const roomType = document.createElement('p');
+    roomType.className = "text-center font-medium text-sm";
+    roomType.textContent = units.unitType;
+    
+    let textColor = '';
+    const roomNumber = document.createElement('div');
+    if(units.unitType === 'Standard Room') {
+        roomNumber.className = "rounded-lg bg-blue-400 w-24 py-1 mt-1";
+        textColor = 'text-blue-900';
+    } else if (units.unitType === 'Deluxe Room') {
+        roomNumber.className = "rounded-lg bg-green-400 w-24 py-1 mt-1";
+        textColor = 'text-green-900';
+    } else if (units.unitType === 'Superior Room') {
+        roomNumber.className = "rounded-lg bg-yellow-400 w-24 py-1 mt-1";
+        textColor = 'text-yellow-900';
+    } else if (units.unitType === 'Bed Spacer') {
+        roomNumber.className = "rounded-lg bg-red-400 w-24 py-1 mt-1";
+        textColor = 'text-red-900';
+    } else if (units.unitType === 'Cottage') {
+        roomNumber.className = "rounded-lg bg-purple-400 w-24 py-1 mt-1";
+        textColor = 'text-purple-900';
+    } else if (units.unitType === 'Matrimonial Room') {
+        roomNumber.className = "rounded-lg bg-pink-400 w-24 py-1 mt-1";
+        textColor = 'text-pink-900';
+    } else if (units.unitType === 'Dormer-type Room') {
+        roomNumber.className = "rounded-lg bg-gray-400 w-24 py-1 mt-1";
+        textColor = 'text-gray-900';
+    } 
+      
+
+    const roomNumberText = document.createElement('p');
+    roomNumberText.className = `font-medium text-xs text-center ${textColor}`;
+    let text = units.unitNumber.split(" ");
+    roomNumberText.textContent = `R#: ${text[1]}`;
+    
+    roomNumber.appendChild(roomNumberText);
+
+    container1.appendChild(roomType);
+    container1.appendChild(roomNumber);
+
+    const reviews = document.createElement('div');
+    reviews.className = "absolute flex justify-end  right-0 top-0 p-2 pr-4";
+
+    const container2 = document.createElement('div');
+    container2.className = "w-20 block justify-end";
+    const text2 = document.createElement('p');
+    text2.className = "right-0 font-normal text-light text-right text-sm text-green-500 mr-2";
+    text2.textContent = "Excellent";
+    const reviewCount = document.createElement('p');
+    reviewCount.className = "font-light text-xs";
+    reviewCount.textContent = "100 reviews";
+
+    const container3 = document.createElement('div');
+    container3.className = "bg-green-300 rounded-lg px-3 items-center justify-center h-6 mt-2";
+    const text3 = document.createElement('p');
+    text3.className = "font-normal text-bold text-xs items-center justify-center mt-1 text-green-700 rounded-full";
+    text3.textContent = "9.8";
+
+    container3.appendChild(text3);
+    container2.appendChild(text2);
+    container2.appendChild(reviewCount);
+    reviews.appendChild(container2);
+    reviews.appendChild(container3);
+
+    const container4 = document.createElement('div');
+    container4.className = "absolute block text-right right-0 bottom-0 mb-1 p-2 pr-4";
+    const price = document.createElement('p');
+    price.className = "font-semibold";
+    price.textContent = `PHP ${units.price.toLocaleString('en-PH')}`;
+    const numberNights = document.createElement('div');
+    numberNights.className = "font-light text-xs";
+    numberNights.textContent = "per night";
+    const detailesButton = document.createElement('button');
+    detailesButton.className = "w-full text-sm bg-blue-500 hover:bg-blue-600 text-white font-bold mt-2  py-2 px-8 rounded-full";
+    detailesButton.textContent = "See Booking Details";
+
+    container4.appendChild(price);
+    container4.appendChild(numberNights);
+    container4.appendChild(detailesButton);
+
+
+
+    infoDiv.appendChild(container1);
+    infoDiv.appendChild(reviews);
+    infoDiv.appendChild(amenitiesContainer);
+    infoDiv.appendChild(container4);
+
+
+   
+    /**/
+
+}
+
 const amenities = [
     {
         name: "Free Wifi", svg: `<svg
@@ -523,7 +842,7 @@ const amenities = [
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
                       xmlns:xlink="http://www.w3.org/1999/xlink"
-                      class="h-4 w-auto inline"
+                      class="h-3 w-auto inline"
                       viewBox="0 0 122.88 83.06"
                       style="enable-background: new 0 0 122.88 83.06"
                       xml:space="preserve"
@@ -540,7 +859,7 @@ const amenities = [
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
                       xmlns:xlink="http://www.w3.org/1999/xlink"
-                      class="h-4 w-auto inline"
+                      class="h-4 w-5 inline"
                       viewBox="0 0 122.88 83.06"
                       style="enable-background: new 0 0 122.88 83.06"
                       xml:space="preserve">
@@ -553,7 +872,7 @@ const amenities = [
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
                       xmlns:xlink="http://www.w3.org/1999/xlink"
-                      class="h-4 w-auto inline"
+                      class="h-3 w-auto inline"
                       viewBox="0 0 122.88 83.06"
                       style="enable-background: new 0 0 122.88 83.06"
                       xml:space="preserve"><g><path class="st0" d="M3.36,0h7.3c1.85,0,3.36,1.56,3.36,3.36v43.77h37.33L61.99,9.69h41.85c10.47,0,19.04,8.59,19.04,19.04v19.04 h-0.02c0.01,0.12,0.02,0.24,0.02,0.37v30.49h-14.02V64.32H14.02v13.66H0V3.36C0,1.51,1.51,0,3.36,0L3.36,0z M35.44,10.37 c8.62,0,15.61,6.99,15.61,15.61c0,8.62-6.99,15.61-15.61,15.61c-8.62,0-15.61-6.99-15.61-15.61 C19.83,17.36,26.82,10.37,35.44,10.37L35.44,10.37z"/></g></svg>`},
@@ -562,7 +881,7 @@ const amenities = [
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
                       xmlns:xlink="http://www.w3.org/1999/xlink"
-                      class="h-4 w-auto inline"
+                      class="h-3 w-auto inline"
                       viewBox="0 0 122.88 83.06"
                       style="enable-background: new 0 0 122.88 83.06"
                       xml:space="preserve"><g><path d="M6.32,0v6.22h12.22V0h6.32v14.88h73.15V0h6.32v6.22h12.22V0h6.32v110.35h-6.32v-7.19h-12.22v7.19h-6.32V94.79H24.87v15.56 h-6.32v-7.19H6.32v7.19H0V0H6.32L6.32,0z M73.58,60.81c0.93-0.16,1.81-0.13,2.58,0.05v-18.1l-19.16,5.5v21.02 c0.01,0.11,0.02,0.23,0.02,0.35c0,0,0,0,0,0c0,2.83-2.97,5.64-6.63,6.27c-3.66,0.63-6.63-1.15-6.63-3.98 c0-2.83,2.97-5.64,6.63-6.27c1.38-0.24,2.66-0.13,3.72,0.24l0-25.88h0.16l24.79-5.68v29.15c0.04,0.21,0.07,0.43,0.07,0.65 c0,0,0,0,0,0c0,2.36-2.48,4.71-5.54,5.24c-3.06,0.53-5.54-0.96-5.54-3.33C68.04,63.68,70.52,61.33,73.58,60.81L73.58,60.81 L73.58,60.81z M98.01,21.2H24.87v67.27h73.15V21.2L98.01,21.2z M116.56,96.84v-11.8h-12.22v11.8H116.56L116.56,96.84z M116.56,78.72v-11.8h-12.22v11.8H116.56L116.56,78.72z M116.56,60.59v-11.8h-12.22v11.8H116.56L116.56,60.59z M116.56,42.47v-11.8 h-12.22v11.8H116.56L116.56,42.47z M116.56,24.35v-11.8h-12.22v11.8H116.56L116.56,24.35z M18.54,96.84v-11.8H6.32v11.8H18.54 L18.54,96.84z M18.54,78.72v-11.8H6.32v11.8H18.54L18.54,78.72z M18.54,60.59v-11.8H6.32v11.8H18.54L18.54,60.59z M18.54,42.47 v-11.8H6.32v11.8H18.54L18.54,42.47z M18.54,24.35v-11.8H6.32v11.8H18.54L18.54,24.35z"/></g></svg>`},
@@ -571,7 +890,7 @@ const amenities = [
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
                       xmlns:xlink="http://www.w3.org/1999/xlink"
-                      class="h-4 w-auto inline"
+                      class="h-3 w-auto inline"
                       viewBox="0 0 122.88 83.06"
                       style="enable-background: new 0 0 122.88 83.06"
                       xml:space="preserve"><g><path d="M6.14,0H65.4c1.69,0,3.23,0.69,4.34,1.8c1.11,1.11,1.8,2.65,1.8,4.34v29.67v73.73c0,1.69-0.69,3.23-1.8,4.34 c-1.11,1.11-2.65,1.8-4.34,1.8h-4.89v2.72c0,2.47-2.02,4.49-4.49,4.49l0,0c-2.47,0-4.49-2.02-4.49-4.49v-2.72H20.17v2.72 c0,2.47-2.02,4.49-4.49,4.49l0,0c-2.47,0-4.49-2.02-4.49-4.49v-2.72H6.14c-1.69,0-3.23-0.69-4.34-1.8c-1.11-1.11-1.8-2.65-1.8-4.34 V35.81V6.14C0,4.45,0.69,2.91,1.8,1.8C2.91,0.69,4.45,0,6.14,0L6.14,0z M10.2,44.89c0-1.34,1.09-2.43,2.43-2.43 c1.34,0,2.43,1.09,2.43,2.43v20.4c0,1.34-1.09,2.43-2.43,2.43c-1.34,0-2.43-1.09-2.43-2.43V44.89L10.2,44.89z M10.2,10.39 c0-1.34,1.09-2.43,2.43-2.43c1.34,0,2.43,1.09,2.43,2.43v15.15c0,1.34-1.09,2.43-2.43,2.43c-1.34,0-2.43-1.09-2.43-2.43V10.39 L10.2,10.39z M4.87,33.37h61.81V6.14c0-0.35-0.14-0.67-0.38-0.9c-0.23-0.23-0.55-0.38-0.9-0.38H6.14c-0.35,0-0.67,0.14-0.9,0.38 c-0.23,0.23-0.38,0.55-0.38,0.9V33.37L4.87,33.37z M66.67,38.24H4.87v71.29c0,0.35,0.14,0.67,0.38,0.9 c0.23,0.23,0.55,0.38,0.9,0.38H65.4c0.35,0,0.67-0.14,0.9-0.38c0.23-0.23,0.38-0.55,0.38-0.9V38.24L66.67,38.24z"/></g></svg>`},
@@ -580,7 +899,7 @@ const amenities = [
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
                       xmlns:xlink="http://www.w3.org/1999/xlink"
-                      class="h-4 w-auto inline"
+                      class="h-3 w-auto inline"
                       viewBox="0 0 122.88 83.06"
                       style="enable-background: new 0 0 122.88 83.06"
                       xml:space="preserve"><g><path class="st0" d="M89.84,122.88H19c0.68-8.61,5.08-15.16,11.38-19.62c-5.37-2.65-10.25-6.16-14.44-10.36 C6.09,83.05,0,69.45,0,54.42c0-15.03,6.09-28.63,15.94-38.48C25.79,6.09,39.39,0,54.42,0C69.45,0,83.05,6.09,92.9,15.94 c9.85,9.85,15.94,23.45,15.94,38.48c0,15.03-6.09,28.63-15.94,38.48c-4.15,4.15-8.97,7.64-14.28,10.28 C84.82,107.62,89.15,114.18,89.84,122.88L89.84,122.88z M58.75,42.7l0.15,0.02c0.32-0.41,0.66-0.82,1-1.22 c0.59-0.69,1.21-1.36,1.86-2.01c2.66-2.67,5.3-4.15,7.92-5.63c1.71-0.96,3.41-1.91,5.02-3.16c0.58-0.45,1-0.91,1.3-1.38 c0.51-0.82,0.64-1.7,0.49-2.58c-0.17-0.99-0.69-2-1.41-2.92c-0.79-1.02-1.82-1.93-2.93-2.63c-0.99-0.63-2.1-1.15-3.24-1.58 c-1.16-0.44-2.37-0.78-3.57-1.07c-1.1-0.26-2.18-0.44-3.25-0.54c-1.11-0.11-2.21-0.16-3.31-0.15c-3.72,0.03-6.81,0.73-9.24,1.95 c-2.22,1.12-3.89,2.68-5,4.58c-1.12,1.93-1.68,4.23-1.66,6.79c0.03,3.29,1.01,7,2.99,10.93c0.34,0.67,0.75,1.25,1.22,1.76 c0.18,0.2,0.37,0.39,0.57,0.57c2.09-1.44,4.63-2.29,7.36-2.29C56.31,42.15,57.57,42.35,58.75,42.7L58.75,42.7z M53.24,46.2 c-1.64,0.28-3.1,0.91-4.38,1.87c-0.16,0.14-0.32,0.29-0.47,0.44c-1.69,1.69-2.74,4.03-2.74,6.62s1.05,4.93,2.74,6.62 c0.35,0.35,0.72,0.67,1.12,0.95c0.23,0.15,0.46,0.29,0.7,0.43l0,0c0.1,0.06,0.2,0.13,0.29,0.2c1.34,0.74,2.88,1.16,4.51,1.16 c2.59,0,4.93-1.05,6.62-2.74c1.69-1.69,2.74-4.03,2.74-6.62s-1.05-4.93-2.74-6.62c-1.03-1.03-2.3-1.82-3.73-2.29 C56.2,45.96,54.64,45.96,53.24,46.2L53.24,46.2z M44.99,46.88c-0.2-0.19-0.39-0.39-0.58-0.6c-0.68-0.75-1.29-1.6-1.77-2.55 c-2.23-4.43-3.34-8.69-3.37-12.52c-0.03-3.22,0.7-6.14,2.14-8.62c1.46-2.51,3.63-4.56,6.49-6c2.91-1.47,6.54-2.3,10.84-2.33 c1.24-0.01,2.47,0.04,3.69,0.16c1.26,0.13,2.5,0.33,3.72,0.61c1.32,0.31,2.68,0.7,4.02,1.21c1.35,0.51,2.67,1.13,3.89,1.9 c1.45,0.91,2.81,2.12,3.87,3.48c1.06,1.37,1.83,2.92,2.11,4.52c0.3,1.71,0.04,3.46-1,5.1c-0.52,0.82-1.22,1.6-2.15,2.32 c-1.85,1.43-3.65,2.45-5.45,3.46c-2.41,1.36-4.84,2.72-7.13,5.02c-0.58,0.58-1.14,1.19-1.67,1.82c-0.14,0.16-0.28,0.33-0.41,0.49 c0.71,0.47,1.36,1.01,1.96,1.61c1.9,1.9,3.22,4.4,3.65,7.18c0.34-0.04,0.68-0.07,1.03-0.08c1.01-0.04,2.04,0.03,3.09,0.27 c4.84,1.12,8.82,2.99,11.79,5.41c2.49,2.03,4.27,4.46,5.26,7.17c1,2.72,1.18,5.7,0.46,8.81c-0.74,3.19-2.41,6.51-5.13,9.83l0,0 c-0.78,0.96-1.61,1.87-2.48,2.73c-0.9,0.88-1.84,1.71-2.85,2.46c-1.08,0.81-2.25,1.61-3.5,2.32c-1.26,0.72-2.59,1.34-3.95,1.78 c-1.63,0.53-3.42,0.8-5.14,0.74c-1.73-0.06-3.42-0.46-4.83-1.27c-1.52-0.87-2.7-2.19-3.3-4.03c-0.3-0.91-0.44-1.95-0.4-3.12 c0.08-2.33,0.45-4.37,0.83-6.41c0.5-2.72,1-5.46,0.7-8.7c-0.07-0.78-0.18-1.59-0.33-2.44c-0.06-0.37-0.13-0.74-0.21-1.1 c-1.22,0.38-2.51,0.58-3.86,0.58c-1.62,0-3.17-0.3-4.61-0.84c-0.08,0.19-0.16,0.38-0.25,0.57c-0.42,0.91-0.96,1.8-1.66,2.63 c-3.2,3.79-6.68,6.47-10.2,8c-2.95,1.29-5.92,1.77-8.77,1.41c-2.88-0.36-5.61-1.56-8.06-3.63c-2.49-2.11-4.68-5.11-6.39-9.05 c-0.5-1.14-0.93-2.29-1.3-3.46c-0.37-1.19-0.67-2.41-0.89-3.67c-0.23-1.33-0.4-2.73-0.46-4.17c-0.06-1.44,0-2.9,0.22-4.32 c0.27-1.7,0.85-3.42,1.68-4.92c0.85-1.52,1.97-2.83,3.33-3.71c1.47-0.95,3.18-1.4,5.09-1.09c0.96,0.15,1.95,0.5,2.97,1.07 c2.03,1.13,3.68,2.4,5.32,3.67c2.19,1.69,4.39,3.38,7.42,4.59c0.75,0.3,1.53,0.58,2.32,0.83c0.5,0.16,1.01,0.3,1.54,0.44 C42.75,50.37,43.69,48.47,44.99,46.88L44.99,46.88z M68.12,56.72c-0.24,1.72-0.81,3.38-1.73,4.96c-0.98,1.69-2.33,3.28-4.07,4.77 c0.11,0.52,0.21,1.04,0.3,1.55c0.15,0.86,0.27,1.77,0.36,2.72c0.35,3.74-0.2,6.71-0.74,9.68c-0.35,1.92-0.7,3.83-0.77,5.88 c-0.02,0.73,0.06,1.36,0.24,1.9c0.3,0.92,0.9,1.58,1.66,2.02c0.87,0.5,1.97,0.75,3.15,0.79c1.29,0.04,2.66-0.17,3.91-0.58 c1.13-0.37,2.23-0.88,3.29-1.48c1.07-0.61,2.12-1.32,3.1-2.06c0.9-0.68,1.73-1.4,2.5-2.15c0.79-0.78,1.53-1.59,2.22-2.44l0,0l0,0 c2.36-2.88,3.8-5.7,4.41-8.35c0.56-2.42,0.43-4.71-0.33-6.78c-0.76-2.08-2.17-3.98-4.16-5.6c-2.55-2.08-6.03-3.71-10.31-4.69 c-0.72-0.17-1.44-0.22-2.14-0.19C68.7,56.66,68.41,56.69,68.12,56.72L68.12,56.72z M47.17,65.46c-1.4-1-2.6-2.25-3.58-3.77 c-1.05-1.63-1.84-3.56-2.37-5.79c-0.5-0.14-1.01-0.28-1.51-0.44c-0.86-0.27-1.72-0.58-2.59-0.92c-3.49-1.4-5.89-3.25-8.28-5.09 c-1.54-1.19-3.08-2.37-4.87-3.37c-0.64-0.36-1.24-0.57-1.79-0.66c-0.96-0.15-1.82,0.07-2.56,0.55c-0.85,0.55-1.57,1.41-2.14,2.44 c-0.63,1.13-1.07,2.44-1.28,3.73c-0.19,1.17-0.23,2.39-0.18,3.61c0.05,1.23,0.21,2.48,0.42,3.7c0.19,1.09,0.45,2.16,0.78,3.2 c0.33,1.06,0.72,2.09,1.16,3.09c1.49,3.41,3.34,5.98,5.42,7.74c1.89,1.6,3.98,2.52,6.17,2.8c2.22,0.28,4.55-0.11,6.9-1.13 c3.01-1.31,6.05-3.67,8.89-7.03c0.47-0.56,0.85-1.17,1.14-1.81c0.13-0.27,0.24-0.54,0.33-0.82L47.17,65.46L47.17,65.46z M90.35,18.49C81.15,9.3,68.45,3.61,54.42,3.61c-14.03,0-26.73,5.69-35.93,14.88C9.3,27.69,3.61,40.39,3.61,54.42 c0,14.03,5.69,26.73,14.88,35.93c9.19,9.19,21.9,14.88,35.93,14.88c14.03,0,26.73-5.69,35.93-14.88 c9.19-9.19,14.88-21.9,14.88-35.93C105.23,40.39,99.54,27.69,90.35,18.49L90.35,18.49z"/></g></svg>`},

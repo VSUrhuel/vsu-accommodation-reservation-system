@@ -270,12 +270,12 @@
                       </select>
                 </form>
             </div>
-            <div class="block h-ful">
+            <div id="rooms"class="block h-ful">
                 <div class="my-2 p-3 border-2 border-black h-44 w-full rounded-lg relative">
                     <div class="flex flex-wrap h-60">
-                        <img src="/src/hotel-room2.jpg" alt="" class="rounded-lg object-cover h-36 ">
-                        <div class="px-2">
-                            <p class="font-bold">Appartle | Standard Room</p>
+                        <img src="/src/hotel-room2.jpg" alt="" class="rounded-lg object-cover  w-60 ">
+                        <div class="px-3">
+                            <p class="font-bold">Appartle</p>
                             <p class="ml-2 mt-2 font-medium text-sm ">Amenities</p>
                             <div class="w-96 grid grid-cols-2">
                                 <div class="w-56">
@@ -339,7 +339,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="bg-bleu-900">
+                                <div>
                                     <ul class="ml-4 block font-light text-xsm text-gray-500">
                                         <li class="inline-flex items-center my-auto">
                                             <?xml version="1.0" encoding="utf-8"?>
@@ -381,6 +381,13 @@
                                         </li>
                                     </ul>
                                 </div>
+                                <div class="absolute bottom-0 mb-4 ml-2 block block-wrap">
+                                    <p class="text-center font-medium text-sm ">Standard Room</p>
+                                    <div class="rounded-lg bg-blue-400 w-24 py-1 mt-1">
+                                        <p class="font-medium text-xs text-center text-blue-900">R#: 303-B</p> 
+                                    </div>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -394,11 +401,11 @@
                         </div>
 
                     </div>
-                    <div class="absolute block text-right right-0 bottom-0 p-2 pr-4">
+                    <div class="absolute block text-right right-0 bottom-0 mb-1 p-2 pr-4">
                         <p class="font-semibold ">PHP 750</p>
                         <p class="font-light text-xs">3 nights</p>
                         <button
-                        class="w-full text-sm bg-blue-500 hover:bg-blue-600 text-white font-bold mt-2  py-2 px-5 rounded-full"
+                        class="w-full text-sm bg-blue-500 hover:bg-blue-600 text-white font-bold mt-2  py-2 px-8 rounded-full"
                       >
                         See Booking Details
                       </button>
@@ -418,19 +425,22 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">1</a>
+                        <a  id="page1" class="flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700 ">1</a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">2</a>
+                        <a id="page2" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">2</a>
                     </li>
                     <li>
-                        <a href="#" aria-current="page" class="z-10 flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
+                        <a id="page3" aria-current="page" class="z-10 flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-blue-100 hover:text-gray-700 ">3</a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">4</a>
+                        <a id="page4" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">4</a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">5</a>
+                        <a id="page5" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">5</a>
+                    </li>
+                    <li>
+                        <a id="page6" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">6</a>
                     </li>
                     <li>
                         <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 ">
