@@ -387,7 +387,31 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('page4').addEventListener('click', function() { paginationView(4); })
         document.getElementById('page5').addEventListener('click', function() { paginationView(5); })
         document.getElementById('page6').addEventListener('click', function() { paginationView(6); })
+        document.getElementById('page7').addEventListener('click', function() { paginationView(7); })
 
+        document.getElementById('prevPage').addEventListener('click', function() {
+            for(let i=1; i<=7; i++){
+                if(document.querySelector(`#page${i}`).className === 'flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700 cursor-pointer'){
+                    let pageNum = i;
+                    if(pageNum > 1){
+                        paginationView(pageNum-1);
+                    }
+                    break;
+                }
+            }
+        })
+        document.getElementById('nextPage').addEventListener('click', function() { 
+            for(let i=1; i<=7; i++){
+                if(document.querySelector(`#page${i}`).className === 'flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700 cursor-pointer'){
+                    let pageNum = i;
+                    if(pageNum < 6){
+                        paginationView(pageNum+1);
+                        break;
+                    }
+                    break;
+                }
+            }
+        })
         let i=0;
 
         const userRef = ref(database, 'unit');
@@ -435,7 +459,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function paginationView(pageNum){
     document.querySelector('#rooms').innerHTML = '';
-    document.querySelector(`page${pageNum}`).innerHTML = 'flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700';
+    document.querySelector(`#page${pageNum}`).className = 'flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700 cursor-pointer';
+    for(let i=1; i<=7; i++){
+        if(i !== pageNum){
+            document.querySelector(`#page${i}`).className = 'flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 cursor-pointer';
+        }
+    }
     
     let skip = (pageNum-1) * 5;
     console.log(skip);
