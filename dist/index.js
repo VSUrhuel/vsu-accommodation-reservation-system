@@ -296,6 +296,18 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('accName').textContent = `${accomodation}`;
             document.getElementById('roomType').textContent = room.unitType;
             document.getElementById('pricePerNight').textContent = `PHP ${room.price.toLocaleString('en-US')}`;
+            
+            let startDate = localStorage.getItem('startDate');
+            document.getElementById('checkInDate').textContent = convertDate(startDate);
+            let endDate = localStorage.getItem('endDate');
+            document.getElementById('checkOutDate').textContent = convertDate(endDate);
+
+            let timeDiff = (new Date(endDate)).getTime() - (new Date(startDate)).getTime();
+            let days = timeDiff / (1000 * 3600 * 24);
+            let night = days > 1 ? 'nights' : 'night';
+            
+            document.getElementById('totalNights').textContent = `${days} ${night}`;
+            document.getElementById('totalPrice').textContent = `PHP ${(days * room.price).toLocaleString('en-US')}`;
 
             const amenitiesList = document.getElementById('amenities');
 
@@ -514,6 +526,17 @@ document.addEventListener('DOMContentLoaded', function () {
     
     }
 })
+
+function convertDate(date) {
+   
+    const dateParts = date.split("/");
+    const dateObj = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
+    const dayOfWeek = dateObj.toLocaleDateString('en-US', {weekday: 'long'});
+    const month = dateObj.toLocaleDateString('en-US', {month: "long"});
+    const day = dateObj.getDate();
+    const year = dateObj.getFullYear();   
+    return `${dayOfWeek}, ${month} ${day}, ${year}`;
+}
 
 function popularFilterChange() {
     console.log(units.length);
@@ -897,7 +920,7 @@ function handleSignOutRedirect() {
         window.location.href = 'index.html';
     }
 }
-
+let startCheckInDate = '', endDate = '';
 function createRooms(rooms, units) {
    // rooms.innerHTML = '';
     let data = units;
@@ -1088,7 +1111,23 @@ function createRooms(rooms, units) {
     const detailesButton = document.createElement('button');
     detailesButton.className = "w-full text-sm bg-blue-500 hover:bg-blue-600 text-white font-bold mt-2  py-2 px-8 rounded-full";
     detailesButton.textContent = "See Booking Details";
-    detailesButton.addEventListener('click', function() { viewRoom(units.unitID); })
+   
+        detailesButton.addEventListener('click', function() { 
+            if (document.getElementById('datepicker-range-start').value === '' && document.getElementById('datepicker-range-end').value === '') {
+                document.getElementById('datepicker-range-start').className = 'bg-red-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5'
+                 document.getElementById('datepicker-range-end').className = 'bg-red-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  block w-full ps-10 p-2.5'
+                return;
+            }
+            startCheckInDate = document.getElementById('datepicker-range-start').value ;
+            localStorage.setItem('startDate', startCheckInDate);
+            endDate = document.getElementById('datepicker-range-end').value;
+            localStorage.setItem('endDate', endDate);
+            viewRoom(units.unitID); 
+        })
+    
+    
+    
+   
 
 
 

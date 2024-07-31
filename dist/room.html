@@ -430,8 +430,8 @@
                       <p class="font-bold text-sm mt-2">Check-out</p>
                     </div>
                     <div class="w-48">
-                      <p class="font-light text-sm">Monday, January 1, 2004</p>
-                      <p class="font-light text-sm mt-2">
+                      <p id="checkInDate" class="font-light text-sm">Monday, January 1, 2004</p>
+                      <p id="checkOutDate" class="font-light text-sm mt-2">
                         Tuesday, January 2, 2004
                       </p>
                     </div>
@@ -442,13 +442,25 @@
                     <div class="grid grid-cols-4 gap-x-px mt-4">
                       <div class="w-40">
                         <p  class="font-light text-sm">Price per night</p>
+                        <p  class="font-light text-sm mt-2">Total nights</p>
                       </div>
-                      <div>
-                        <p id="pricePerNight" class="font-bold text-sm">PHP 600</p>
+                      
+                      <div class="w-24">
+                        <p id="pricePerNight" class="font-bold text-sm text-right">PHP 600</p>
+                        <p id="totalNights" class="font-bold text-sm mt-2 text-right">3 nights</p>
                       </div>
                     </div>
                     <hr class="border border-gray-600 my-6" />
-                    
+                    <div  class="grid grid-cols-4 gap-x-px mt-4">
+                      <div class="w-40">
+                        <p  class="font-semibold text-sm ">TOTAL</p>
+                      </div>
+                      <div class="w-24">
+                        <p id="totalPrice" class="font-bold text-sm text-right">PHP 21,022</p>
+                       
+                      </div>
+
+                    </div>
                   </div>
                 </div>
               </div>
