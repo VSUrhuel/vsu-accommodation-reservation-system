@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('carousel-items').innerHTML = carouselItems.map(createCarouselItem).join('');
         document.getElementById('table-content').innerHTML = tableContent.map(createTableRow).join('');
 
+        document.getElementById('book').addEventListener('click', function() {
+            window.location.href = 'book.html';
+        })
+
 
         viewAccommodations();
 
@@ -360,6 +364,11 @@ document.addEventListener('DOMContentLoaded', function () {
             safeRemoveItem('signOut');
             window.location.href = 'index.html';
         }
+
+        document.getElementById('bookNowBtn').addEventListener('click', function(){
+            alert("cld");
+            bookReservation();
+        });
     }
     function handleBookPage() {
         createUserCard();
@@ -526,6 +535,63 @@ document.addEventListener('DOMContentLoaded', function () {
     
     }
 })
+
+function validCardNumber(number) {
+    const cleanedCardNumber = number.replace(/\D/g , '');
+    if (cleanedCardNumber === ''){
+        return false;
+    }
+    return true;
+}
+function bookReservation() {
+    const cardName = document.getElementById('cardName');
+    const cardNumber = document.getElementById('cardNumber');
+    const validityDate = document.getElementById('validityDate');
+    const cvc = document.getElementById('cvc');
+
+    if(cardName.value === '') {
+        cardName.className = 'bg-gray-50 border border-red-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-64 ps-3 p-2.5';
+        alert('Please enter card holder name');
+        return;
+    }
+    if (validityDate.value === '') {
+        validityDate.className = 'bg-gray-50 border border-red-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5';
+        alert('Please enter validity date');
+        return;
+    }
+    if (cvc.value === '' || cvc.value.length != 3) {
+        cvc.className = 'bg-gray-50 border border-red-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-3 p-2.5';
+        alert('Please enter a valid cvc');
+        return;
+    }
+    if (cardNumber.value === '' || !validCardNumber(cardNumber.value)) {
+        cardNumber.className = 'bg-gray-50 border border-red-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-3 p-2.5';
+        alert('Please enter card number');
+        return;
+    } 
+    
+    const room = JSON.parse(localStorage.getItem('roomData'));
+    
+    const userRef = ref(database, 'unit');
+    onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((data) => {
+                if (data.val().unitID === `${room.unitID}`) {
+                    const reservation = {
+                        reserved: true,
+                        startDate: localStorage.getItem('startDate'),
+                        endDate: localStorage.getItem('endDate')
+                    };
+                    update(ref(database, `unit/${room.unitID}/reservation`), reservation);
+                    alert('Reservation successful');
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+    }, (error) => {
+        console.error('Error fetching data:', error);
+    });
+}
 
 function convertDate(date) {
    
@@ -1254,8 +1320,8 @@ const amenities = [
 
 const navItems = [
     { name: "Home", href: "index.html", current: true },
+    { name: "Book", href: "book.html" },
     { name: "About", href: "#" },
-    { name: "Services", href: "#" },
     { name: "Contact", href: "#" }
 ];
 
