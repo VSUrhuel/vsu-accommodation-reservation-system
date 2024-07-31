@@ -337,12 +337,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            const datepickerStart = document.getElementById('datepicker-range-start');
-            const today = new Date().toLocaleDateString();
-            datepickerStart.setAttribute(`datepicker-min-date`, today);
-
-            const datepickerEnd = document.getElementById('datepicker-range-end');
-            datepickerEnd.setAttribute(`datepicker-min-date`, today);
+           
            
     
         }
@@ -380,38 +375,25 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('#userCard').style.display = 'none';
         }
 
+        document.getElementById('searchBtn').addEventListener('click', function() {searchAvailableAcc();});
 
-        document.getElementById('page2').addEventListener('click', function() { paginationView(2); })
+        document.getElementById('pagination').appendChild(createPaginationBar(7));
+        const datepickerStart = document.getElementById('datepicker-range-start');
+        const today = new Date().toLocaleDateString();
+        datepickerStart.setAttribute(`datepicker-min-date`, today);
+
+        const datepickerEnd = document.getElementById('datepicker-range-end');
+        datepickerEnd.setAttribute(`datepicker-min-date`, today);
+
+       /* document.getElementById('page2').addEventListener('click', function() { paginationView(2); })
         document.getElementById('page1').addEventListener('click', function() { paginationView(1); })
         document.getElementById('page3').addEventListener('click', function() { paginationView(3); })
         document.getElementById('page4').addEventListener('click', function() { paginationView(4); })
         document.getElementById('page5').addEventListener('click', function() { paginationView(5); })
         document.getElementById('page6').addEventListener('click', function() { paginationView(6); })
-        document.getElementById('page7').addEventListener('click', function() { paginationView(7); })
+        document.getElementById('page7').addEventListener('click', function() { paginationView(7); })*/
 
-        document.getElementById('prevPage').addEventListener('click', function() {
-            for(let i=1; i<=7; i++){
-                if(document.querySelector(`#page${i}`).className === 'flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700 cursor-pointer'){
-                    let pageNum = i;
-                    if(pageNum > 1){
-                        paginationView(pageNum-1);
-                    }
-                    break;
-                }
-            }
-        })
-        document.getElementById('nextPage').addEventListener('click', function() { 
-            for(let i=1; i<=7; i++){
-                if(document.querySelector(`#page${i}`).className === 'flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700 cursor-pointer'){
-                    let pageNum = i;
-                    if(pageNum < 6){
-                        paginationView(pageNum+1);
-                        break;
-                    }
-                    break;
-                }
-            }
-        })
+       
         let i=0;
 
         const userRef = ref(database, 'unit');
@@ -419,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function () {
         onValue(userRef, (snapshot) => {
             if (snapshot.exists()) {
                 snapshot.forEach((data) => {
-                    if (i==4){
+                    if (i==4 || data.val().reservation.reserved){
                         return;
                     }
                     i++;
@@ -432,8 +414,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     unit.unitID = data.val().unitID;
                     unit.unitNumber = data.val().unitNumber;
                     unit.unitType = data.val().unitType;
+                    unit.reservation = data.val().reservation;
                     createRooms(rooms, unit);
-                    console.log(unit);
                 });
             }
         })
@@ -457,11 +439,102 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 })
 
-function paginationView(pageNum){
+function searchAvailableAcc() {
+    
+}
+
+function createPaginationBar(numPages) {
+    const paginationBar = document.createElement('nav');
+  paginationBar.setAttribute('aria-label', 'Page navigation example item-center');
+
+  const ul = document.createElement('ul');
+  ul.classList.add('flex', 'items-center', '-space-x-px', 'h-8', 'text-sm');
+
+  // Previous page button
+  const prevPageLi = document.createElement('li');
+  const prevPageLink = document.createElement('a');
+  prevPageLink.setAttribute('id', 'prevPage');
+  prevPageLink.classList.add('flex', 'items-center', 'justify-center', 'px-3', 'h-8', 'ms-0', 'leading-tight', 'text-gray-500', 'bg-white', 'border', 'border-e-0', 'border-gray-300', 'rounded-s-lg', 'hover:bg-gray-100', 'hover:text-gray-700', 'cursor-pointer');
+  prevPageLink.innerHTML = `
+    <span class="sr-only">Previous</span>
+    <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+    </svg>
+  `;
+  prevPageLink.addEventListener('click', function() {
+    for(let i=1; i<=numPages; i++){
+        if(document.querySelector(`#page${i}`).className === 'flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700 cursor-pointer'){
+            let pageNum = i;
+            if(pageNum > 1){
+                paginationView(pageNum-1, numPages);
+            }
+            break;
+        }
+    }
+  })
+  prevPageLi.appendChild(prevPageLink);
+  ul.appendChild(prevPageLi);
+
+  // Page buttons
+  for (let i = 1; i <= numPages; i++) {
+    let color = '';
+    if(i==1){
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.setAttribute('id', `page${i}`);
+        link.className = 'flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700 cursor-pointer';
+        link.textContent = i;
+        link.addEventListener('click', function() { paginationView(i, numPages); })
+        li.appendChild(link);
+        ul.appendChild(li);
+    } else {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.setAttribute('id', `page${i}`);
+        link.classList.add('flex', 'items-center', 'justify-center', 'px-3', 'h-8', 'leading-tight', 'text-gray-500', 'bg-white', 'border', 'border-gray-300', 'hover:bg-gray-100', 'hover:text-gray-700', 'cursor-pointer');
+        link.textContent = i;
+        link.addEventListener('click', function() { paginationView(i, numPages); })
+        li.appendChild(link);
+        ul.appendChild(li);
+    }
+  }
+
+  // Next page button
+  const nextPageLi = document.createElement('li');
+  const nextPageLink = document.createElement('a');
+  nextPageLink.setAttribute('id', 'nextPage');
+  nextPageLink.classList.add('flex', 'items-center', 'justify-center', 'px-3', 'h-8', 'leading-tight', 'text-gray-500', 'bg-white', 'border', 'border-gray-300', 'rounded-e-lg', 'hover:bg-gray-100', 'hover:text-gray-700', 'cursor-pointer');
+  nextPageLink.innerHTML = `
+    <span class="sr-only">Next</span>
+    <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+    </svg>
+  `;
+  nextPageLink.addEventListener('click', function() {
+    for(let i=1; i<=numPages; i++){
+        if(document.querySelector(`#page${i}`).className === 'flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700 cursor-pointer'){
+            let pageNum = i;
+            if(pageNum < numPages){
+                paginationView(pageNum+1, numPages);
+                break;
+            }
+            break;
+        }
+    }
+  })
+  nextPageLi.appendChild(nextPageLink);
+  ul.appendChild(nextPageLi);
+
+  paginationBar.appendChild(ul);
+
+  return paginationBar;
+}
+function paginationView(pageNum, max){
     document.querySelector('#rooms').innerHTML = '';
     document.querySelector(`#page${pageNum}`).className = 'flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700 cursor-pointer';
-    for(let i=1; i<=7; i++){
-        if(i !== pageNum){
+    for(let i=1; i<=max; i++){
+        if(i != pageNum){
+            
             document.querySelector(`#page${i}`).className = 'flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 cursor-pointer';
         }
     }
@@ -671,7 +744,7 @@ function createRooms(rooms, units) {
     leftContainer.className = 'w-50';
 
     const amenitiesList = document.createElement('ul');
-    amenitiesList.className = 'ml-4 block font-light text-xsm text-gray-500';
+    amenitiesList.className = 'ml-4 grid font-light text-xsm text-gray-500';
     let limit = units.amenities.length > 3 ? 3 : units.amenities.length;
     for(let i=0; i<limit; i++) {
         const amenity = document.createElement('li');
@@ -768,7 +841,6 @@ function createRooms(rooms, units) {
         textColor = 'text-gray-900';
     } 
       
-
     const roomNumberText = document.createElement('p');
     roomNumberText.className = `font-medium text-xs text-center ${textColor}`;
     let text = units.unitNumber.split(" ");
@@ -814,6 +886,9 @@ function createRooms(rooms, units) {
     const detailesButton = document.createElement('button');
     detailesButton.className = "w-full text-sm bg-blue-500 hover:bg-blue-600 text-white font-bold mt-2  py-2 px-8 rounded-full";
     detailesButton.textContent = "See Booking Details";
+    detailesButton.addEventListener('click', function() { viewRoom(units.unitID); })
+
+
 
     container4.appendChild(price);
     container4.appendChild(numberNights);
@@ -1149,10 +1224,9 @@ function viewRoom(unitId) {
                         price: data.val().price,
                         unitId: data.val().unitID,
                         unitNumber: data.val().unitNumber,
-                        unitType: data.val().unitType
+                        unitType: data.val().unitType,
+                        reservation: data.val().reservation
                     };
-
-                    alert("jd");
                     //console.log(room);
                     if (localStorage.getItem('roomData')) {
                         localStorage.removeItem('roomData');
@@ -1167,7 +1241,8 @@ function viewRoom(unitId) {
     }, (error) => {
         console.error('Error fetching data:', error);
     });
-}
+  }
+  
 function setUpRoom(room) {
     window.location.href = 'room.html';
 
