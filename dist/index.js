@@ -20,7 +20,7 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 
 var userEmail = '';
-
+let filters = [];
 document.addEventListener('DOMContentLoaded', function () {
     //document.getElementById('scenic-views').innerHTML = scenicViews.map(createScenicView).join('');
 
@@ -376,8 +376,84 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         document.getElementById('searchBtn').addEventListener('click', function() {searchAvailableAcc();});
+        deafultAvailableAcc();
 
-        document.getElementById('pagination').appendChild(createPaginationBar(7));
+        document.getElementById('showerFilter').addEventListener('change', function() {
+            if(document.getElementById('showerFilter').checked){
+                filters.push('Hot and Cold Shower');
+            } else {
+                filters.splice(filters.indexOf('Hot and Cold Shower'), 1);
+            }
+            
+            popularFilterChange();
+        });
+        document.getElementById('tvFilter').addEventListener('change', function() {
+            if(document.getElementById('tvFilter').checked){
+                filters.push('Free TV');
+            } else {
+                filters.splice(filters.indexOf('Free TV'), 1);
+            }
+            
+            popularFilterChange();
+        });
+        document.getElementById('airconditionedFilter').addEventListener('change', function() {
+            if(document.getElementById('airconditionedFilter').checked){
+                filters.push('Air Conditioning');
+            } else {
+                filters.splice(filters.indexOf('Air Conditioning'), 1);
+            }
+            
+            popularFilterChange();
+        });
+
+        document.getElementById('anyPrice').addEventListener('change', function() {
+            popularFilterChange();
+            if(document.getElementById('anyPrice').checked){
+                units = units.filter(unit => unit.price >= 0);
+            } else {
+                units = units.filter(unit => unit.price >= 0);
+            }
+            defaultRoomView();
+        })
+        document.getElementById('less250').addEventListener('change', function() {
+            popularFilterChange();
+            if(document.getElementById('less250').checked){
+                units = units.filter(unit => unit.price <= 250);
+            } else {
+                units = units.filter(unit => unit.price > 250);
+            }
+            defaultRoomView();
+        })
+        document.getElementById('250-750').addEventListener('change', function() {
+            popularFilterChange();
+            if(document.getElementById('250-750').checked){
+                units = units.filter(unit => unit.price > 250 && unit.price <= 750);
+            } else {
+                units = units.filter(unit => unit.price < 250 || unit.price > 750);
+            }
+            defaultRoomView();
+        })
+        document.getElementById('750-1500').addEventListener('change', function() {
+            popularFilterChange();
+            if(document.getElementById('750-1500').checked){
+                units = units.filter(unit => unit.price > 750 && unit.price <= 1500);
+            } else {
+                units = units.filter(unit => unit.price < 750 || unit.price > 1500);
+            }
+            defaultRoomView();
+        })
+        document.getElementById('above1500').addEventListener('change', function() {
+            popularFilterChange();
+            if(document.getElementById('above1500').checked){
+                units = units.filter(unit => unit.price > 1500);
+            }
+            defaultRoomView();
+        })
+                
+
+
+
+
         const datepickerStart = document.getElementById('datepicker-range-start');
         const today = new Date().toLocaleDateString();
         datepickerStart.setAttribute(`datepicker-min-date`, today);
@@ -394,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('page7').addEventListener('click', function() { paginationView(7); })*/
 
        
-        let i=0;
+        /*let i=0;
 
         const userRef = ref(database, 'unit');
         const rooms = document.getElementById('rooms');
@@ -418,8 +494,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     createRooms(rooms, unit);
                 });
             }
-        })
-        
+        })*/
+
         
         
     }
@@ -439,8 +515,162 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 })
 
-function searchAvailableAcc() {
+function popularFilterChange() {
+    console.log(units.length);
+    searchAvailableAcc();
+    const filteredUnits = [];
+    for (let i = 0; i < units.length; i++) {
+       
+        let unit = units[i];
+        let amenitiesMatched = true;
+        
+        for (let j = 0; j < filters.length; j++) {
+            
+            if (!unit.amenities.includes(filters[j])) {
+                amenitiesMatched = false;
+                break;
+            }
+        }
+        
+        if (amenitiesMatched) {
+            filteredUnits.push(unit);
+            console.log(unit);
+        }
+    }
     
+    units = filteredUnits;
+    defaultRoomView();
+    document.getElementById('pagination').innerHTML = '';
+    document.getElementById('pagination').appendChild(createPaginationBar(Math.ceil(filteredUnits.length/5)));
+}
+function formatDate(dateString) {
+    const date = new Date(dateString);
+
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+
+    const month = monthNames[date.getMonth()];
+    const day = date.getDate();
+    
+    return `${month} ${day}`;
+}
+
+let units = [];
+
+function deafultAvailableAcc() {
+    const userRef = ref(database, 'unit');
+    onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((data) => {
+                if (data.val().reservation.reserved) {
+                    return;
+                }
+                let unit = {
+                    accommodationID: data.val().accommodationID,
+                    amenities: data.val().amenities,
+                    availability: data.val().availability,
+                    capacity: data.val().capacity,
+                    price: data.val().price,
+                    unitID: data.val().unitID,
+                    unitNumber: data.val().unitNumber,
+                    unitType: data.val().unitType,
+                    reservation: data.val().reservation
+                };
+                units.push(unit);
+            });
+            handlePagination();
+        }
+    }, (error) => {
+        console.error('Error fetching data:', error);
+    });
+}
+
+function handlePagination() {
+    const pagination = document.getElementById('pagination');
+    const pageSize = 5;
+    const pageCount = Math.ceil(units.length / pageSize);
+    pagination.innerHTML = '';
+    pagination.appendChild(createPaginationBar(pageCount));
+    paginationView(1, pageCount);
+}
+
+function convertToDateObj(date) {
+    const dateParts = date.split('/');
+    const year = parseInt(dateParts[2], 10);
+    const month = parseInt(dateParts[0], 10) - 1;
+    const day = parseInt(dateParts[1], 10);
+    
+    return new Date(year, month, day);
+}
+
+function searchAvailableAcc() {
+    const rooms = document.getElementById('rooms');
+    const startDate = document.getElementById('datepicker-range-start').value;
+    const endDate = document.getElementById('datepicker-range-end').value;
+    if(startDate == ''  && endDate == ''){
+        document.getElementById('defualtInfo').style.display = 'block';
+        document.getElementById('searchInfo').style.display = 'hidden';
+    } else {
+        document.getElementById('default').textContent = '';
+        document.getElementById('defualtInfo').style.display = 'hidden';
+        document.getElementById('searchInfo').style.display = 'block';
+        document.getElementById('dateRange').textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+
+    }
+    units = [];
+   
+    const userRef = ref(database, 'unit');
+    onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((data) => {
+                console.log(data.val().reservation.reserved);
+                let end1 = convertToDateObj(data.val().reservation.endDate);
+                let end2 = convertToDateObj(endDate);
+                if (data.val().reservation.reserved && end1 > end2) {
+                    return;
+                }
+                let unit = {
+                    accommodationID: data.val().accommodationID,
+                    amenities: data.val().amenities,
+                    availability: data.val().availability,
+                    capacity: data.val().capacity,
+                    price: data.val().price,
+                    unitID: data.val().unitID,
+                    unitNumber: data.val().unitNumber,
+                    unitType: data.val().unitType,
+                    reservation: data.val().reservation
+                };
+                units.push(unit);
+            });
+            
+        }
+    }, (error) => {
+        console.error('Error fetching data:', error);
+    });
+    const priceCheckbox = document.getElementById('priceCheckbox');
+    console.log(units);
+    if(priceCheckbox.checked) {
+        units = units.sort((a, b) => a.price - b.price);
+    } 
+    console.log(units);
+    console.log(units.length);
+    
+    document.getElementById('pagination').innerHTML = '';
+    document.getElementById('pagination').appendChild(createPaginationBar(Math.ceil(units.length/5)));
+    document.getElementById('numberSearch').textContent = `${units.length} search results for`;
+    defaultRoomView();
+}
+
+function defaultRoomView() {
+    console.log(units);
+    document.getElementById('rooms').innerHTML = '';
+    for(let i=0; i<5 && i<units.length; i++){
+        createRooms(rooms, units[i]);
+    }
+    document.getElementById('pagination').innerHTML = '';
+    document.getElementById('pagination').appendChild(createPaginationBar(Math.ceil(units.length/5)));
 }
 
 function createPaginationBar(numPages) {
@@ -529,54 +759,26 @@ function createPaginationBar(numPages) {
 
   return paginationBar;
 }
+
 function paginationView(pageNum, max){
     document.querySelector('#rooms').innerHTML = '';
     document.querySelector(`#page${pageNum}`).className = 'flex items-center justify-center px-3 h-8 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-gray-100 hover:text-blue-700 cursor-pointer';
-    for(let i=1; i<=max; i++){
-        if(i != pageNum){
-            
+
+    for (let i = 1; i <= max; i++) {
+        if (i !== pageNum) {
             document.querySelector(`#page${i}`).className = 'flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 cursor-pointer';
         }
     }
-    
-    let skip = (pageNum-1) * 5;
-    console.log(skip);
-    let i = 0, j=0, stopLoop = false;
-    const userRef = ref(database, 'unit');
+
     const rooms = document.getElementById('rooms');
-    onValue(userRef, (snapshot) => {
-        if (snapshot.exists()) {
-            snapshot.forEach((childSnapshot) => {
-                if (i < skip) {
-                  i++;
-                  return;
-                }
-                console.log("helo");
-                if(!stopLoop) {
-                    const data = childSnapshot.val();
-                    // now you can access data here
-                    let unit = {};
-                    unit.accommodationID = data.accommodationID;
-                    unit.amenities = data.amenities;
-                    unit.availability = data.availability;
-                    unit.capacity = data.capacity;
-                    unit.price = data.price;
-                    unit.unitID = data.unitID;
-                    unit.unitNumber = data.unitNumber;
-                    unit.unitType = data.unitType;
-                    createRooms(rooms, unit);
-                    console.log(unit);
-                    console.log("inside");
-                    j++;
-                }
-                console.log(stopLoop);
-                if (j > 4) {
-                  stopLoop = true;
-                  return;
-                }
-            });
-        }
-    })
+    const pageSize = 5;
+    const start = (pageNum - 1) * pageSize;
+    const end = pageNum * pageSize;
+
+    for (let k = start; k < units.length && k < end; k++) {
+        createRooms(rooms, units[k]);
+    }
+   
 }
 
 function titleCase(str){

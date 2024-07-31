@@ -155,11 +155,11 @@
                         <p class="font-light text-sm mt-4 mb-3">Order by</p>
                         <div class="grid grid-cols-3">
                             <div class="flex items-center ">
-                                <input id="default-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <input id="priceCheckbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                 <label for="default-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Price</label>
                             </div>
                             <div class="flex items-center">
-                                <input checked id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <input id="ratingCheckbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                 <label for="checked-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Rating</label>
                             </div>
 
@@ -175,29 +175,23 @@
             <div class="h-1/2 w-full p-6">
                 <p class="font-bold py-2 text-lg">Popular Filters</p>
                 <ul class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg ">
+                    
                     <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
                         <div class="flex items-center ps-3">
-                            <input id="vue-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                            <label for="vue-checkbox" 
-                            class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Budget Hotel</label>
+                            <input id="showerFilter" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
+                            <label for="showerFilter" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Hot and Cold Shower</label>
                         </div>
                     </li>
                     <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
                         <div class="flex items-center ps-3">
-                            <input id="react-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                            <label for="react-checkbox" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Hot and Cold Shower</label>
+                            <input id="airconditionedFilter" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
+                            <label for="airconditionedFilter" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Airconditioned</label>
                         </div>
                     </li>
                     <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
                         <div class="flex items-center ps-3">
-                            <input id="angular-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                            <label for="angular-checkbox" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Airconditioned</label>
-                        </div>
-                    </li>
-                    <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                        <div class="flex items-center ps-3">
-                            <input id="laravel-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                            <label for="laravel-checkbox" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Free WiFi</label>
+                            <input id="tvFilter" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
+                            <label for="tvFilter" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Free TV</label>
                         </div>
                     </li>
                 </ul>
@@ -208,27 +202,32 @@
                 <ul class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg ">
                     <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
                         <div class="flex items-center ps-3">
-                            <input id="vue-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                            <label for="vue-checkbox" 
-                            class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Less than PHP 250</label>
+                            <input id="anyPrice" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                            <label for="anyPrice" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Any</label>
                         </div>
                     </li>
                     <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
                         <div class="flex items-center ps-3">
-                            <input id="react-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                            <label for="react-checkbox" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">PHP 250 - PHP 500</label>
+                            <input id="less250" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                            <label for="less250" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Less than PHP 250</label>
                         </div>
                     </li>
                     <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
                         <div class="flex items-center ps-3">
-                            <input id="angular-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                            <label for="angular-checkbox" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">PHP 500 - 750</label>
+                            <input id="250-750" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                            <label for="250-750" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">PHP 250 - PHP 750</label>
                         </div>
                     </li>
                     <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
                         <div class="flex items-center ps-3">
-                            <input id="laravel-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                            <label for="laravel-checkbox" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Above PHP 750</label>
+                            <input id="750-1500" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                            <label for="750-1500" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">PHP 750 - PHP 1500</label>
+                        </div>
+                    </li>
+                    <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                        <div class="flex items-center ps-3">
+                            <input id="above1500" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                            <label for="above1500" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Above PHP 1500</label>
                         </div>
                     </li>
                 </ul>
@@ -268,17 +267,15 @@
         <div class="p-6 h-full w-full">
             <div class="relative block">
                 <div id="searchInfo"   class="hidden">
-                    <p class="text-sm">140 search results for</p>
-                    <p class="mt-2 font-bold text-lg">July 29 - August 31 <span class="ml-2 font-normal text-sm">available accommodations</span></p>
+                    <p id="numberSearch" class="text-sm">140 search results for</p>
+                    <p id="dateRange" class="mt-2 font-bold text-lg">July 29 - August 31 <span class="ml-2 font-normal text-sm">available accommodations</span></p>
                 </div>
-                <div id="defualtInfo">
-                    <p class=" font-bold text-lg my-4">Available Accommodations</p>
+                <div id="defualtInfo"   class="block">
+                    <p id="default" class=" font-bold text-lg my-4">Available Accommodations</p>
                 </div>
 
                 <div action="" class="absolute flex right-0 top-0">
-                    
-
-                      <div id="pagination" class="justify-center items-center align-middle align-center w-full">
+                    <div id="pagination" class="justify-center items-center align-middle align-center w-full">
                         
                     </div>
                 </div>
