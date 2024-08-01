@@ -366,7 +366,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         document.getElementById('bookNowBtn').addEventListener('click', function(){
-            alert("cld");
             bookReservation();
         });
     }
@@ -438,6 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         document.getElementById('less250').addEventListener('change', function() {
             popularFilterChange();
+            document.getElementById('less250').checked = true;
             if(document.getElementById('less250').checked){
                 units = units.filter(unit => unit.price <= 250);
             } else {
@@ -447,6 +447,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         document.getElementById('250-750').addEventListener('change', function() {
             popularFilterChange();
+            document.getElementById('250-750').checked = true;
             if(document.getElementById('250-750').checked){
                 units = units.filter(unit => unit.price > 250 && unit.price <= 750);
             } else {
@@ -456,6 +457,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         document.getElementById('750-1500').addEventListener('change', function() {
             popularFilterChange();
+            document.getElementById('750-1500').checked = true;
             if(document.getElementById('750-1500').checked){
                 units = units.filter(unit => unit.price > 750 && unit.price <= 1500);
             } else {
@@ -465,6 +467,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         document.getElementById('above1500').addEventListener('change', function() {
             popularFilterChange();
+            document.getElementById('above1500').checked = true;
             if(document.getElementById('above1500').checked){
                 units = units.filter(unit => unit.price > 1500);
             }
@@ -543,46 +546,78 @@ function validCardNumber(number) {
     }
     return true;
 }
-function bookReservation() {
+async function bookReservation() {
+  
+
     const cardName = document.getElementById('cardName');
     const cardNumber = document.getElementById('cardNumber');
     const validityDate = document.getElementById('validityDate');
     const cvc = document.getElementById('cvc');
-
+    let notAllowed = false;
     if(cardName.value === '') {
         cardName.className = 'bg-gray-50 border border-red-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-64 ps-3 p-2.5';
-        alert('Please enter card holder name');
-        return;
+        
+        notAllowed = true;
     }
     if (validityDate.value === '') {
         validityDate.className = 'bg-gray-50 border border-red-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5';
-        alert('Please enter validity date');
-        return;
+        
+        notAllowed = true;
     }
     if (cvc.value === '' || cvc.value.length != 3) {
         cvc.className = 'bg-gray-50 border border-red-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-3 p-2.5';
-        alert('Please enter a valid cvc');
-        return;
+       
+        notAllowed = true;
     }
     if (cardNumber.value === '' || !validCardNumber(cardNumber.value)) {
         cardNumber.className = 'bg-gray-50 border border-red-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-3 p-2.5';
-        alert('Please enter card number');
-        return;
+        
+        notAllowed = true;
     } 
+    if(notAllowed) {
+        alert("Please enter necessary payment details.");
+        return;
+    }
     
+    const totalPrice = document.getElementById('totalPrice').textContent;
+    const date = new Date();
+    const currentDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    const paymentID = await fetchLatestPaymentID();
+
+
+    set(ref(database, `payment/${paymentID}`), {
+        nameOnCard: cardName.value,
+        cardNumber: cardNumber.value,
+        paymentDate: currentDate,
+        cvc: cvc.value,
+        paymentID: paymentID,
+        amount: totalPrice,
+        validityDate: validityDate.value
+    });
+
+    const reservationID = await fetchLatestReservationID();
+    set(ref(database, `reservation/${reservationID}`), {
+        paymentID: paymentID,
+        reservationID: reservationID,
+        userID: localStorage.getItem('userKey')
+    });
+
+
     const room = JSON.parse(localStorage.getItem('roomData'));
+    
     
     const userRef = ref(database, 'unit');
     onValue(userRef, (snapshot) => {
         if (snapshot.exists()) {
             snapshot.forEach((data) => {
-                if (data.val().unitID === `${room.unitID}`) {
+                if (data.val().unitID === `${room.unitId}`) {
                     const reservation = {
                         reserved: true,
                         startDate: localStorage.getItem('startDate'),
                         endDate: localStorage.getItem('endDate')
                     };
-                    update(ref(database, `unit/${room.unitID}/reservation`), reservation);
+                    update(ref(database, `unit/${room.unitId}/reservation`), reservation);
+                    
                     alert('Reservation successful');
                     window.location.href = 'index.html';
                 }
@@ -605,6 +640,9 @@ function convertDate(date) {
 }
 
 function popularFilterChange() {
+    if(document.getElementById('less250') || document.getElementById('250-750') || document.getElementById('750-1500') || document.getElementById('above1500')) {
+        document.getElementById('anyPrice').checked = true;
+    }
     console.log(units.length);
     searchAvailableAcc();
     const filteredUnits = [];
@@ -716,8 +754,10 @@ function searchAvailableAcc() {
             snapshot.forEach((data) => {
                 console.log(data.val().reservation.reserved);
                 let end1 = convertToDateObj(data.val().reservation.endDate);
-                let end2 = convertToDateObj(endDate);
-                if (data.val().reservation.reserved && end1 > end2) {
+                let startRes = convertToDateObj(data.val().reservation.startDate);
+                let startCheckIn = convertToDateObj(startDate);
+                let endCheckIn = convertToDateObj(endDate);
+                if (data.val().reservation.reserved && (end1 > startCheckIn && startRes < endCheckIn)) {
                     return;
                 }
                 let unit = {
@@ -1565,6 +1605,8 @@ function logInAcc(event) {
     const password = document.querySelector('#password').value;
     const userRef = ref(database, 'user');
 
+
+
     onValue(userRef, (snapshot) => {
         if (snapshot.exists()) {
             let userFound = false;
@@ -1654,7 +1696,6 @@ async function createAccount(event) {
     }
     try {
         const newId = await fetchLatestUserId();
-        alert(newId);
         const userCredential = await createUserWithEmailAndPassword(auth, floating_email, floating_password);
         const user = userCredential.user;
 
@@ -1698,6 +1739,60 @@ async function fetchLatestUserId() {
                 }
             } else {
                 resolve('USR001'); // Default ID if no users exist
+            }
+        }, (error) => {
+            reject(error);
+        });
+    });
+}
+
+async function fetchLatestPaymentID() {
+    return new Promise((resolve, reject) => {
+        const userRef = ref(database, 'payment');
+        onValue(userRef, (snapshot) => {
+            if (snapshot.exists()) {
+                let latestId = null;
+                snapshot.forEach((data) => {
+                    latestId = data.key;
+                });
+
+                if (latestId) {
+                    const prefix = latestId.slice(0, 3);
+                    const idNumber = parseInt(latestId.slice(3)) + 1;
+                    const newId = prefix + idNumber.toString().padStart(3, '0');
+                    resolve(newId);
+                } else {
+                    resolve('PMT001'); // Default ID if no users exist
+                }
+            } else {
+                resolve('PMT001'); // Default ID if no users exist
+            }
+        }, (error) => {
+            reject(error);
+        });
+    });
+}
+
+async function fetchLatestReservationID() {
+    return new Promise((resolve, reject) => {
+        const userRef = ref(database, 'reservation');
+        onValue(userRef, (snapshot) => {
+            if (snapshot.exists()) {
+                let latestId = null;
+                snapshot.forEach((data) => {
+                    latestId = data.key;
+                });
+
+                if (latestId) {
+                    const prefix = latestId.slice(0, 3);
+                    const idNumber = parseInt(latestId.slice(3)) + 1;
+                    const newId = prefix + idNumber.toString().padStart(3, '0');
+                    resolve(newId);
+                } else {
+                    resolve('RES001'); // Default ID if no users exist
+                }
+            } else {
+                resolve('RES001'); // Default ID if no users exist
             }
         }, (error) => {
             reject(error);
