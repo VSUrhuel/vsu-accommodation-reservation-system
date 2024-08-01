@@ -370,6 +370,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     function handleBookPage() {
+       
+
+        for(let i=0; i<navItems.length; i++) {
+            if(navItems[i].name === 'Book') {
+                console.log("ins");
+                navItems[i].current = true;
+                break;
+            }
+            navItems[i].current = false;
+        }
+
         createUserCard();
         document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
 
@@ -1191,7 +1202,7 @@ function createRooms(rooms, units) {
     text2.className = "right-0 font-normal text-light text-right text-sm text-green-500 mr-2";
     text2.textContent = "Excellent";
     const reviewCount = document.createElement('p');
-    reviewCount.className = "font-light text-xs";
+    reviewCount.className = "font-light text-xs text-right mr-2";
     reviewCount.textContent = "100 reviews";
 
     const container3 = document.createElement('div');
@@ -1360,8 +1371,8 @@ const amenities = [
 
 const navItems = [
     { name: "Home", href: "index.html", current: true },
-    { name: "Book", href: "book.html" },
-    { name: "About", href: "#" },
+    { name: "Book", href: "book.html", current: false},
+    { name: "About", href: "#", current: false},
     { name: "Contact", href: "#" }
 ];
 
@@ -1391,7 +1402,7 @@ const scenicViews = [
 function createNavItem(item) {
     return `
         <li>
-            <a href="${item.href}" class="block py-2 px-3 md:p-0 ${item.current ? 'text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700' : 'text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700'}" aria-current="${item.current ? 'page' : 'false'}">
+            <a href="${item.href}" id="${item.name}" class="block py-2 px-3 md:p-0 ${item.current ? 'text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700' : 'text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700'}" aria-current="${item.current ? 'page' : 'false'}">
                 ${item.name}
             </a>
         </li>
