@@ -370,19 +370,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     function handleBookPage() {
-       
-
-        for(let i=0; i<navItems.length; i++) {
-            if(navItems[i].name === 'Book') {
-                console.log("ins");
-                navItems[i].current = true;
-                break;
-            }
-            navItems[i].current = false;
-        }
-
-        createUserCard();
-        document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
 
         if (localStorage.getItem('loggedIn') === 'true') {
             document.querySelector('#userCard').style.display = 'block';
@@ -404,8 +391,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
         } else {
             document.querySelector('#userCard').style.display = 'none';
+            window.location.href = 'login.html';
         }
 
+    
+
+        for(let i=0; i<navItems.length; i++) {
+            if(navItems[i].name === 'Book') {
+                console.log("ins");
+                navItems[i].current = true;
+                break;
+            }
+            navItems[i].current = false;
+        }
+
+        createUserCard();
+        document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
+
+        
         document.getElementById('searchBtn').addEventListener('click', function() {searchAvailableAcc();});
         deafultAvailableAcc();
 
@@ -533,6 +536,57 @@ document.addEventListener('DOMContentLoaded', function () {
 
         
         
+    } 
+    function handleBookingsPage() {
+        if (localStorage.getItem('loggedIn') === 'true') {
+            document.querySelector('#userCard').style.display = 'block';
+            const email = localStorage.getItem('email');
+            const userRef = ref(database, 'user');
+
+            onValue(userRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((data) => {
+                        if (data.val().email === email) {
+                            document.getElementById('profileName').textContent = `${data.val().firstName} ${data.val().lastName}`;
+                            document.getElementById('profileEmail').textContent = data.val().email;
+                            document.getElementById('welcomeMessage').textContent = `Hi, ${data.val().firstName}!`;
+                            getBookedUnits(data.key);
+                        }
+                    });
+                }
+            }, (error) => {
+                console.error('Error fetching user data:', error);
+            });
+
+        } else {
+            document.querySelector('#userCard').style.display = 'none';
+            window.location.href = 'login.html';
+        }
+        for(let i=0; i<navItems.length; i++) {
+            if(navItems[i].name === 'Bookings') {
+                navItems[i].current = true;
+                break;
+            }
+            navItems[i].current = false;
+        }
+        
+        createUserCard();
+        document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
+       
+        if (localStorage.getItem('signOut') === 'true') {
+            safeRemoveItem('loggedIn');
+            safeRemoveItem('email');
+            safeRemoveItem('signOut');
+            window.location.href = 'index.html';
+        }
+
+        document.getElementById('addBookingBtn').addEventListener('click', function() {
+    
+            window.location.href = 'book.html';
+        })
+       
+
+       
     }
     if (document.body.classList.contains('index-page')) {
         handleIndexPage();
@@ -546,9 +600,263 @@ document.addEventListener('DOMContentLoaded', function () {
         handleRoomPage();
     } else if (document.body.classList.contains('book-page')) {
         handleBookPage();
-    
+    } else if (document.body.classList.contains('bookings-page')) {
+        handleBookingsPage();
     }
 })
+
+let bookedUnits = [];
+
+function getBookedUnits(userID) {
+
+    bookedUnits = [];
+    
+    const reservationRef = ref(database, 'reservation');
+    onValue(reservationRef, (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((data) => {
+                if (data.val().userID === userID) {
+                    bookedUnits.push(data.val().unitID);
+                    
+                }
+            });
+        }
+    }, (error) => {
+        console.error('Error fetching data:', error);
+    });
+    let container = document.getElementById('container');
+    container.innerHTML = '';
+    console.log(bookedUnits);
+    const userRef = ref(database, 'unit');
+    onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((data) => {
+                for(let i=0; i<bookedUnits.length; i++) {
+                    if (data.val().unitID === bookedUnits[i]) {
+                        if(convertToDateObj(data.val().reservation.startDate) < Date.now()){
+                            createBookingUnit(container, data.val());
+                            console.log("ibnsie");
+                        }
+                    }
+                }
+            });
+        }
+    });
+}
+
+function createBookingUnit(container, units) {
+    let data = units;
+    const innerDiv = document.createElement('div');
+    innerDiv.className = 'my-2 p-3 border-2 border-black h-44 w-full rounded-lg relative';
+    container.appendChild(innerDiv);
+
+    const flexDiv = document.createElement('div');
+    flexDiv.className = 'flex flex-wrap h-60';
+    innerDiv.appendChild(flexDiv);
+
+    const img = document.createElement('img');
+    img.src = '/src/hotel-room2.jpg';
+    img.alt = '';
+    img.className = 'rounded-lg object-cover w-60';
+    flexDiv.appendChild(img);
+
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'px-2';
+    flexDiv.appendChild(infoDiv);
+
+    const roomTitle = document.createElement('p');
+    roomTitle.className = 'font-bold';
+    let accommodationName = '';
+    const userRef = ref(database, 'accommodations');
+    onValue(userRef, (snapshot) => {
+        if(snapshot.exists()){
+            snapshot.forEach((x) => {
+                if(x.key === units.accommodationID){
+                    roomTitle.textContent = `${x.val().accommodationName}`;
+                }
+            })
+        }
+    });
+    infoDiv.appendChild(roomTitle);
+
+    const amenitiesTitle = document.createElement('p');
+    amenitiesTitle.className = 'ml-2 mt-2 font-medium text-sm ';
+    amenitiesTitle.textContent = 'Amenities';
+    infoDiv.appendChild(amenitiesTitle);
+
+    const amenitiesContainer = document.createElement('div');
+    amenitiesContainer.className = 'w-96 grid grid-cols-2';
+
+    const leftContainer = document.createElement('div');
+    leftContainer.className = 'w-50';
+
+    const amenitiesList = document.createElement('ul');
+    amenitiesList.className = 'ml-4 grid font-light text-xsm text-gray-500';
+    let limit = units.amenities.length > 3 ? 3 : units.amenities.length;
+    for(let i=0; i<limit; i++) {
+        const amenity = document.createElement('li');
+        amenity.className = "inline-flex items-center";
+        let amenityName = units.amenities[i];
+        let amenityData = amenities.find(a => a.name === amenityName);
+
+                // Handle special case for 'bed'
+        if (amenityName.includes('bed')) {
+            amenityData = amenities.find(a => a.name === 'bed');
+        }
+               
+        if (amenityData) {
+            amenity.innerHTML = amenityData.svg;
+            const title = document.createElement('p');
+            title.className = 'pl-2 font-light text-sm';
+            if(amenityName.includes('bed')){
+                title.textContent = titleCase(amenityName);
+            } else {
+                title.textContent = amenityName;
+            }
+
+            amenity.appendChild(title);
+            amenitiesList.appendChild(amenity);
+        }
+    }
+    leftContainer.appendChild(amenitiesList);
+
+    const rightContainer = document.createElement('div');
+    rightContainer.className = 'w-50';
+    const amenitiesList2 = document.createElement('ul');
+    amenitiesList2.className = 'ml-4 block font-light text-xsm text-gray-500';
+    if(units.amenities.length > 3) {
+        for(let i=3; i<units.amenities.length; i++) {
+            const amenity = document.createElement('li');
+            amenity.className = "inline-flex items-center";
+            let amenityName = units.amenities[i];
+            let amenityData = amenities.find(a => a.name === amenityName);
+
+            if (amenityName.includes('bed')) {
+                amenityData = amenities.find(a => a.name === 'bed');
+            }
+
+            if (amenityData) {
+                amenity.innerHTML = amenityData.svg;
+                const title = document.createElement('p');
+                title.className = 'pl-2 font-light text-sm';
+                if(amenityName.includes('bed')){
+                    title.textContent = titleCase(amenityName);
+                } else {
+                    title.textContent = amenityName;
+                }
+    
+                amenity.appendChild(title);
+                amenitiesList2.appendChild(amenity);
+            }
+
+        }
+    }
+    rightContainer.appendChild(amenitiesList2)
+
+    amenitiesContainer.appendChild(leftContainer);
+    amenitiesContainer.appendChild(rightContainer);
+
+    const container1 = document.createElement('div');
+    container1.className = "absolute bottom-0 mb-4 ml-2 block block-wrap";
+
+    const roomType = document.createElement('p');
+    roomType.className = "text-center font-medium text-sm";
+    roomType.textContent = units.unitType;
+    
+    let textColor = '';
+    const roomNumber = document.createElement('div');
+    if(units.unitType === 'Standard Room') {
+        roomNumber.className = "rounded-lg bg-blue-400 w-24 py-1 mt-1";
+        textColor = 'text-blue-900';
+    } else if (units.unitType === 'Deluxe Room') {
+        roomNumber.className = "rounded-lg bg-green-400 w-24 py-1 mt-1";
+        textColor = 'text-green-900';
+    } else if (units.unitType === 'Superior Room') {
+        roomNumber.className = "rounded-lg bg-yellow-400 w-24 py-1 mt-1";
+        textColor = 'text-yellow-900';
+    } else if (units.unitType === 'Bed Spacer') {
+        roomNumber.className = "rounded-lg bg-red-400 w-24 py-1 mt-1";
+        textColor = 'text-red-900';
+    } else if (units.unitType === 'Cottage') {
+        roomNumber.className = "rounded-lg bg-purple-400 w-24 py-1 mt-1";
+        textColor = 'text-purple-900';
+    } else if (units.unitType === 'Matrimonial Room') {
+        roomNumber.className = "rounded-lg bg-pink-400 w-24 py-1 mt-1";
+        textColor = 'text-pink-900';
+    } else if (units.unitType === 'Dormer-type Room') {
+        roomNumber.className = "rounded-lg bg-gray-400 w-24 py-1 mt-1";
+        textColor = 'text-gray-900';
+    } 
+      
+    const roomNumberText = document.createElement('p');
+    roomNumberText.className = `font-medium text-xs text-center ${textColor}`;
+    let text = units.unitNumber.split(" ");
+    roomNumberText.textContent = `R#: ${text[1]}`;
+    
+    roomNumber.appendChild(roomNumberText);
+
+    container1.appendChild(roomType);
+    container1.appendChild(roomNumber);
+
+    const reviews = document.createElement('div');
+    reviews.className = "absolute flex justify-end  right-0 top-0 p-2 pr-4";
+
+    const container2 = document.createElement('div');
+    container2.className = "w-20 block justify-end";
+    const text2 = document.createElement('p');
+    text2.className = "right-0 font-normal text-light text-right text-sm text-green-500 mr-2";
+    text2.textContent = "Excellent";
+    const reviewCount = document.createElement('p');
+    reviewCount.className = "font-light text-xs text-right mr-2";
+    reviewCount.textContent = "100 reviews";
+
+    const container3 = document.createElement('div');
+    container3.className = "bg-green-300 rounded-lg px-3 items-center justify-center h-6 mt-2";
+    const text3 = document.createElement('p');
+    text3.className = "font-normal text-bold text-xs items-center justify-center mt-1 text-green-700 rounded-full";
+    text3.textContent = "9.8";
+
+    container3.appendChild(text3);
+    container2.appendChild(text2);
+    container2.appendChild(reviewCount);
+    reviews.appendChild(container2);
+    reviews.appendChild(container3);
+
+    let timeDiff = (new Date(units.reservation.endDate)).getTime() - (new Date(units.reservation.startDate)).getTime();
+    let days = timeDiff / (1000 * 3600 * 24);
+    let night = days > 1 ? 'nights' : 'night';
+
+
+    const container4 = document.createElement('div');
+    container4.className = "absolute block text-right right-0 bottom-0 mb-1 p-2 pr-4";
+    const price = document.createElement('p');
+    price.className = "font-semibold";
+    price.textContent = `PHP ${(days * units.price).toLocaleString('en-US')}`;
+    const numberNights = document.createElement('div');
+    numberNights.className = "font-light text-xs mb-2";
+    numberNights.textContent = `${days} ${night}`;
+    const dateRange = document.createElement('div');
+    dateRange.className = "rounded-lg bg-green-400 py-2 px-4";
+    const textRange = document.createElement('p');
+    textRange.className = "font-bold text-xs text-green-900";
+    let yearStart = units.reservation.startDate.split('/');
+    let yearEnd = units.reservation.endDate.split('/');
+    textRange.textContent = `${formatDate(units.reservation.startDate)}, ${yearStart[2]} - ${formatDate(units.reservation.endDate)}, ${yearEnd[2]}`;
+    dateRange.appendChild(textRange);
+
+    container4.appendChild(price);
+    container4.appendChild(numberNights);
+    container4.appendChild(dateRange);
+
+
+
+    infoDiv.appendChild(container1);
+    infoDiv.appendChild(reviews);
+    infoDiv.appendChild(amenitiesContainer);
+    infoDiv.appendChild(container4);
+
+
+}
 
 function validCardNumber(number) {
     const cleanedCardNumber = number.replace(/\D/g , '');
@@ -607,10 +915,15 @@ async function bookReservation() {
     });
 
     const reservationID = await fetchLatestReservationID();
+    const roomGet = JSON.parse(localStorage.getItem('roomData'));
+    const roomID = roomGet.unitId;
+    alert(roomID);
+
     set(ref(database, `reservation/${reservationID}`), {
         paymentID: paymentID,
         reservationID: reservationID,
-        userID: localStorage.getItem('userKey')
+        userID: localStorage.getItem('userKey'),
+        unitID: roomID
     });
 
 
@@ -744,17 +1057,23 @@ function convertToDateObj(date) {
 }
 
 function searchAvailableAcc() {
+   
     const rooms = document.getElementById('rooms');
     const startDate = document.getElementById('datepicker-range-start').value;
     const endDate = document.getElementById('datepicker-range-end').value;
     if(startDate == ''  && endDate == ''){
         document.getElementById('defualtInfo').style.display = 'block';
         document.getElementById('searchInfo').style.display = 'hidden';
+        document.getElementById('datepicker-range-start').classList = 'bg-gray-50 border border-red-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5';
+        document.getElementById('datepicker-range-end').classList = 'bg-gray-50 border border-red-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5';
+
     } else {
         document.getElementById('default').textContent = '';
         document.getElementById('defualtInfo').style.display = 'hidden';
         document.getElementById('searchInfo').style.display = 'block';
         document.getElementById('dateRange').textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+        document.getElementById('datepicker-range-start').classList = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5';
+        document.getElementById('datepicker-range-end').classList = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5';
 
     }
     units = [];
@@ -953,8 +1272,9 @@ function viewAccommodations() {
                 if (event.target.closest('.dynamic-button')) {
                     const button = event.target.closest('.dynamic-button');
                     const accommodationId = button.getAttribute('data-id');
-                    alert(`Button clicked for accommodation ID: ${accommodationId}`);
-                    viewRoom('UNT001');
+                    window.location.href = 'book.html';
+                    //alert(`Button clicked for accommodation ID: ${accommodationId}`);
+                    //viewRoom('UNT001');
                     // Add your event handling logic here
                 }
             });
@@ -1226,7 +1546,7 @@ function createRooms(rooms, units) {
     numberNights.className = "font-light text-xs";
     numberNights.textContent = "per night";
     const detailesButton = document.createElement('button');
-    detailesButton.className = "w-full text-sm bg-blue-500 hover:bg-blue-600 text-white font-bold mt-2  py-2 px-8 rounded-full";
+    detailesButton.className = "w-full text-sm text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold mt-2  py-2 px-8 rounded-full";
     detailesButton.textContent = "See Booking Details";
    
         detailesButton.addEventListener('click', function() { 
@@ -1372,7 +1692,7 @@ const amenities = [
 const navItems = [
     { name: "Home", href: "index.html", current: true },
     { name: "Book", href: "book.html", current: false},
-    { name: "About", href: "#", current: false},
+    { name: "Bookings", href: "bookings.html", current: false},
     { name: "Contact", href: "#" }
 ];
 
@@ -1412,7 +1732,7 @@ function createNavItem(item) {
 function createCarouselItem(item) {
     return `
         <div class="${item.active ? 'block' : 'hidden'} duration-700 ease-in-out" data-carousel-item="${item.active ? 'active' : ''}">
-            <img src="${item.src}" class="absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="${item.alt}">
+            <img src="${item.src}"  class="absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="${item.alt}">
         </div>
     `;
 }
@@ -1544,12 +1864,12 @@ function createAccommodation(accommodation) {
         <div class="grid gap-4 items-center">
             <div class="border border-gray-200 object-cover rounded-lg shadow">
                 <div class="p-4">
-                    <a href="#">
+                    <a href="book.html">
                         <img class="w-96 h-36 m-6 rounded-xl object-cover" src="${accommodation.src}" alt="product image" />
                     </a>
                 </div>
                 <div class="px-6 mx-7 pb-5">
-                    <a href="#">
+                    <a href="book.html">
                         <h5 class="text-lg font-medium tracking-tight text-gray-900">${accommodation.name}</h5>
                         <p class="text-sm font-light tracking-tight text-gray-600">${accommodation.location}</p>
                     </a>
