@@ -317,6 +317,17 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('accName').textContent = `${accomodation}`;
             document.getElementById('roomType').textContent = room.unitType;
             document.getElementById('pricePerNight').textContent = `PHP ${room.price.toLocaleString('en-US')}`;
+            const userRef = ref(database, 'accommodations');
+            onValue(userRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((data) => {
+                        if (data.key === room.accommodationId) {
+                            document.getElementById('roomDescription').textContent = data.val().description;
+                        }
+                    });
+                }
+            });
+            //document.getElementById('roomDescription').textContent = 
             
             let startDate = localStorage.getItem('startDate');
             document.getElementById('checkInDate').textContent = convertDate(startDate);
