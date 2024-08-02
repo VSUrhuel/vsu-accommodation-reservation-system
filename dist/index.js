@@ -454,7 +454,19 @@ document.addEventListener('DOMContentLoaded', function () {
         
 
         
-        document.getElementById('searchBtn').addEventListener('click', function() {searchAvailableAcc();});
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            if(document.getElementById('showerFilter').checked) {
+                document.getElementById('showerFilter').checked = false;
+            } 
+            if(document.getElementById('airconditionedFilter').checked) {
+            document.getElementById('airconditionedFilter').checked = false;
+            }
+            if(document.getElementById('tvFilter').checked) {
+            document.getElementById('tvFilter').checked = false;
+            }
+            
+            searchAvailableAcc();
+        });
         deafultAvailableAcc();
 
         document.getElementById('showerFilter').addEventListener('change', function() {
@@ -686,6 +698,54 @@ document.addEventListener('DOMContentLoaded', function () {
        
 
        
+    } 
+    function handleAboutPage() {
+        for(let i=0; i<navItems.length; i++) {
+            if(navItems[i].name === 'About'){
+                navItems[i].current = true;
+                break;
+            } 
+            navItems[i].current = false;
+        }
+
+        localStorage.setItem('previousPage', localStorage.getItem('currentPage'));
+        localStorage.setItem('currentPage', 'about.html');
+        
+        createUserCard();
+        document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
+
+        if (localStorage.getItem('loggedIn') === 'true') {
+            document.querySelector('#loginSigninBtn').style.display = 'none';
+            document.querySelector('#userCard').style.display = 'block';
+            const email = localStorage.getItem('email');
+            const userRef = ref(database, 'user');
+
+            onValue(userRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((data) => {
+                        if (data.val().email === email) {
+                            document.getElementById('profileName').textContent = `${data.val().firstName} ${data.val().lastName}`;
+                            document.getElementById('profileEmail').textContent = data.val().email;
+                        }
+                    });
+                }
+            }, (error) => {
+                console.error('Error fetching user data:', error);
+            });
+
+        } else {
+            document.querySelector('#userCard').style.display = 'none';
+        }
+
+        document.getElementById('signOutBtn').addEventListener('click', function() {
+            localStorage.setItem('signOut', 'true');
+            safeRemoveItem('loggedIn');
+            safeRemoveItem('email');
+            safeRemoveItem('signOut');
+            window.location.href = 'index.html';
+        })
+
+
     }
     if (document.body.classList.contains('index-page')) {
         handleIndexPage();
@@ -701,8 +761,10 @@ document.addEventListener('DOMContentLoaded', function () {
         handleBookPage();
     } else if (document.body.classList.contains('bookings-page')) {
         handleBookingsPage();
+    } else if (document.body.classList.contains('about-page')) {
+        handleAboutPage();
     }
-})
+}) 
 
 let bookedUnits = [];
 
@@ -900,26 +962,7 @@ function createBookingUnit(container, units) {
     const reviews = document.createElement('div');
     reviews.className = "absolute flex justify-end  right-0 top-0 p-2 pr-4";
 
-    const container2 = document.createElement('div');
-    container2.className = "w-20 block justify-end";
-    const text2 = document.createElement('p');
-    text2.className = "right-0 font-normal text-light text-right text-sm text-green-500 mr-2";
-    text2.textContent = "Excellent";
-    const reviewCount = document.createElement('p');
-    reviewCount.className = "font-light text-xs text-right mr-2";
-    reviewCount.textContent = "100 reviews";
-
-    const container3 = document.createElement('div');
-    container3.className = "bg-green-300 rounded-lg px-3 items-center justify-center h-6 mt-2";
-    const text3 = document.createElement('p');
-    text3.className = "font-normal text-bold text-xs items-center justify-center mt-1 text-green-700 rounded-full";
-    text3.textContent = "9.8";
-
-    container3.appendChild(text3);
-    container2.appendChild(text2);
-    container2.appendChild(reviewCount);
-    reviews.appendChild(container2);
-    reviews.appendChild(container3);
+    
 
     let timeDiff = (new Date(units.reservation.endDate)).getTime() - (new Date(units.reservation.startDate)).getTime();
     let days = timeDiff / (1000 * 3600 * 24);
@@ -1016,7 +1059,7 @@ async function bookReservation() {
     const reservationID = await fetchLatestReservationID();
     const roomGet = JSON.parse(localStorage.getItem('roomData'));
     const roomID = roomGet.unitId;
-    alert(roomID);
+  
 
     set(ref(database, `reservation/${reservationID}`), {
         paymentID: paymentID,
@@ -1041,7 +1084,7 @@ async function bookReservation() {
                     };
                     update(ref(database, `unit/${room.unitId}/reservation`), reservation);
                     
-                    alert('Reservation successful');
+                   
                     window.location.href = 'index.html';
                 }
             });
@@ -1803,7 +1846,7 @@ const navItems = [
     { name: "Home", href: "index.html", current: true },
     { name: "Book", href: "book.html", current: false},
     { name: "Bookings", href: "bookings.html", current: false},
-    { name: "Contact", href: "" }
+    { name: "About", href: "about.html", current: false }
 ];
 
 const carouselItems = [
@@ -2054,7 +2097,6 @@ function logInAcc(event) {
             snapshot.forEach((data) => {
                 if (data.val().email === email && data.val().password === password) {
                     userFound = true;
-                    alert('User logged in successfully');
                     localStorage.setItem('loggedIn', 'true');
                     localStorage.setItem('email', `${email}`);
                     localStorage.setItem('userKey', `${data.key}`);

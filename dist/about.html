@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link href="output.css" rel="stylesheet" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Roboto&display=swap" rel="stylesheet">
+    
+  </head>
+  <body class="px-8 font-sans about-page">
+    <div class="flex flex-col h-screen bg-red">
+      <nav class="bg-white border-gray-200">
+        <div
+          class="w-full flex flex-wrap items-center justify-between mx-auto p-4"
+        >
+          <a
+            href="https://flowbite.com/"
+            class="flex items-center space-x-3 rtl:space-x-reverse"
+          >
+            <img
+              src="https://flowbite.com/docs/images/logo.svg"
+              class="h-8"
+              alt="Flowbite Logo"
+            />
+            <span class="self-center text-2xl font-semibold whitespace-nowrap"
+              >Flowbite</span
+            >
+          </a>
+          <div
+            class="flex items-left justify-left w-full md:flex md:w-auto md:order-1"
+            id="navbar-cta"
+          >
+            <ul
+              id="nav-items"
+              class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white text-sm"
+            ></ul>
+          </div>
+          <div
+            class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse"
+          >
+            <div id="loginSigninBtn" class="">
+              <button
+                type="button"
+                id="signInBtn"
+                class="text-blue-700 bg-white border border-blue-700 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-white font-medium rounded-xl text-xs px-5 py-2 text-center mr-2"
+              >
+                Sign up
+              </button>
+              <button
+                id="logInBtn"
+                type="button"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl px-5 py-2 text-center text-xs"
+              >
+                Log in
+              </button>
+            </div>
+            <div
+              class="relative h-10 justify-center items-center m-0 p-0"
+              id="userCard"
+            ></div>
+          <div
+            class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse"
+          >
+            <button
+              data-collapse-toggle="navbar-cta"
+              type="button"
+              class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              aria-controls="navbar-cta"
+              aria-expanded="false"
+            >
+              <span class="sr-only">Open main menu</span>
+              <svg
+                class="w-5 h-5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 17 14"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M1 1h15M1 7h15M1 13h15"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </nav>
+      <div class="w-full h-full">
+        <div class="mb-4">
+            <img src="/src/vsu-scenic-view/vsu1.jpg" alt="" class="w-full h-56 object-cover rounded-xl">
+           
+        </div>
+        <div class="w-full items-center mx-auto">
+            <h1 class="text-center font-bold text-green-800  font-montserrat text-4xl mx-auto mb-4 pt-4">VISAYAS STATE UNIVERSITY</h1>
+            <p class="text-center w-1/2 mx-auto font-light text-base italic">Located at the island of Leyte in central Philippines, flanked by a high mountain range and the Camotes Sea, VSU is a leading global university in agriculture and allied fields. Its flagship campus in Baybay City is widely considered the most beautiful educational campus in the Philippines.</p>
+        </div>
+        <div class="w-full items-center mx-auto">
+            <h1 class="text-center font-bold text-xl mx-auto mb-4 pt-4">Vision</h1>
+            <p class="text-center w-1/2 mx-auto font-light text-sm italic">A globally competitive university for science, technology, and environmental conservation.</p>
+        </div>
+        <div class="w-full items-center mx-auto">
+            <h1 class="text-center font-bold text-xl mx-auto mb-4 pt-4">Mission</h1>
+            <p class="text-center w-1/2 mx-auto font-light text-sm italic">Development of a highly competitive human resource, cutting-edge scientific knowledge and innovative technologies for sustainable communities and environment.</p>
+        </div>
+      </div>
+     
+      <footer class="bg-white rounded-lg shadow mt-12">
+        <div class="w-full mx-auto p-4 md:py-8">
+          <div class="sm:flex sm:items-center sm:justify-between">
+            <a
+              href="https://flowbite.com/"
+              class="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse"
+            >
+              <img
+                src="https://flowbite.com/docs/images/logo.svg"
+                class="h-8"
+                alt="Flowbite Logo"
+              />
+              <span class="self-center text-2xl font-semibold whitespace-nowrap"
+                >Flowbite</span
+              >
+            </a>
+            <ul
+              class="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0"
+            >
+              <li>
+                <a href="#" class="hover:underline me-4 md:me-6">About</a>
+              </li>
+              <li>
+                <a href="#" class="hover:underline me-4 md:me-6"
+                  >Privacy Policy</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:underline me-4 md:me-6">Licensing</a>
+              </li>
+              <li>
+                <a href="#" class="hover:underline">Contact</a>
+              </li>
+            </ul>
+          </div>
+          <hr class="my-6 border-gray-200 sm:mx-auto lg:my-8" />
+          <span class="block text-sm text-gray-500 sm:text-center"
+            >© 2023
+            <a href="https://flowbite.com/" class="hover:underline">Flowbite™</a
+            >. All Rights Reserved.</span
+          >
+        </div>
+      </footer>
+    </div>
+  </body>
+
+  <script type="module" src="index.js"></script>
+  <script src="/node_modules/flowbite/dist/flowbite.min.js"></script>
+</html>
