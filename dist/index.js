@@ -107,7 +107,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleLoginPage() {
-      
+        if (localStorage.getItem('loggedIn') === 'true') {
+            window.location.href = 'index.html';
+        }
+        
         const loginForm = document.getElementById("logInForm");
         if (loginForm) {
             loginForm.addEventListener('submit', logInAcc);
@@ -116,6 +119,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleSignInPage() {
+        if (localStorage.getItem('loggedIn') === 'true') {
+            window.location.href = 'index.html';
+        }
         
         const signInForm = document.querySelector('#signInForm');
         if (signInForm) {
@@ -124,6 +130,12 @@ document.addEventListener('DOMContentLoaded', function () {
         // document.querySelector('#createAccount').addEventListener('submit', createAccount);
         document.getElementById('googleSignIn').addEventListener('click', signInGoogle);
         document.getElementById('fbSignIn').addEventListener('click', signInFacebook);
+
+        
+        const datepickerStart = document.getElementById('birthday_picker');
+        const today = new Date().toLocaleDateString();
+        datepickerStart.setAttribute(`datepicker-max-date`, today);
+
     }
 
     /*function handleProfilePage() {
@@ -232,6 +244,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             });
         }
+
+        const datepickerStart = document.getElementById('editBirthday');
+        const today = new Date().toLocaleDateString();
+        datepickerStart.setAttribute(`datepicker-min-date`, today);
 
 
 
