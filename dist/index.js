@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //document.getElementById('scenic-views').innerHTML = scenicViews.map(createScenicView).join('');
 
     function handleIndexPage() {
+        localStorage.setItem('currentPage', 'index.html')
         createUserCard();
         document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
 
@@ -38,7 +39,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
         viewAccommodations();
 
+        if (localStorage.getItem('loggedIn') === 'true') {
+            document.querySelector('#loginSigninBtn').style.display = 'none';
+            document.querySelector('#userCard').style.display = 'block';
+            const email = localStorage.getItem('email');
+            const userRef = ref(database, 'user');
 
+            onValue(userRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((data) => {
+                        if (data.val().email === email) {
+                            document.getElementById('profileName').textContent = `${data.val().firstName} ${data.val().lastName}`;
+                            document.getElementById('profileEmail').textContent = data.val().email;
+                        }
+                    });
+                }
+            }, (error) => {
+                console.error('Error fetching user data:', error);
+            });
+
+        } else {
+            document.querySelector('#userCard').style.display = 'none';
+            document.querySelector('#loginSigninBtn').style.display = 'block';
+
+        }
 
         const signInBtn = document.getElementById('signInBtn');
         if (signInBtn) {
@@ -72,28 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-        if (localStorage.getItem('loggedIn') === 'true') {
-            document.querySelector('#loginSigninBtn').style.display = 'none';
-            document.querySelector('#userCard').style.display = 'block';
-            const email = localStorage.getItem('email');
-            const userRef = ref(database, 'user');
-
-            onValue(userRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    snapshot.forEach((data) => {
-                        if (data.val().email === email) {
-                            document.getElementById('profileName').textContent = `${data.val().firstName} ${data.val().lastName}`;
-                            document.getElementById('profileEmail').textContent = data.val().email;
-                        }
-                    });
-                }
-            }, (error) => {
-                console.error('Error fetching user data:', error);
-            });
-
-        } else {
-            document.querySelector('#userCard').style.display = 'none';
-        }
+        
 
         if (localStorage.getItem('signOut') === 'true') {
             safeRemoveItem('loggedIn');
@@ -104,6 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleLoginPage() {
+      
         const loginForm = document.getElementById("logInForm");
         if (loginForm) {
             loginForm.addEventListener('submit', logInAcc);
@@ -112,6 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleSignInPage() {
+        
         const signInForm = document.querySelector('#signInForm');
         if (signInForm) {
             signInForm.addEventListener('submit', createAccount);
@@ -161,6 +166,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }*/
 
     function handleProfilePage() {
+        for(let i=0; i<navItems.length; i++) {
+            navItems[i].current = false;
+        }
         createUserCard();
         document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
         const email = localStorage.getItem('email');
@@ -258,6 +266,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
     function handleRoomPage() {
+        for(let i=0; i<navItems.length; i++) {
+            navItems[i].current = false;
+        }
+
+        localStorage.setItem('previousPage', localStorage.getItem('currentPage'));
+        localStorage.setItem('currentPage', 'room.html');
+        document.getElementById('backBtn').addEventListener('click', function() {
+            window.location.href = localStorage.getItem('previousPage');
+        })
         createUserCard();
         document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
 
@@ -370,7 +387,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     function handleBookPage() {
+        localStorage.setItem('previousPage', localStorage.getItem('currentPage'));
+        localStorage.setItem('currentPage', 'book.html');
+        document.getElementById('backBtn').addEventListener('click', function() {
+            window.location.href = localStorage.getItem('previousPage');
+        })
+       
 
+        for(let i=0; i<navItems.length; i++) {
+            if(navItems[i].name === 'Book') {
+                console.log("ins");
+                navItems[i].current = true;
+                break;
+            }
+            navItems[i].current = false;
+            console.log("remove");
+        }
+        createUserCard();
+        document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
+        
         if (localStorage.getItem('loggedIn') === 'true') {
             document.querySelector('#userCard').style.display = 'block';
             const email = localStorage.getItem('email');
@@ -393,20 +428,19 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('#userCard').style.display = 'none';
             window.location.href = 'login.html';
         }
+        document.getElementById('signOutBtn').addEventListener('click', function() {
+            localStorage.setItem('signOut', 'true');
+            safeRemoveItem('loggedIn');
+            safeRemoveItem('email');
+            safeRemoveItem('signOut');
+            window.location.href = 'login.html';
+        })
 
     
 
-        for(let i=0; i<navItems.length; i++) {
-            if(navItems[i].name === 'Book') {
-                console.log("ins");
-                navItems[i].current = true;
-                break;
-            }
-            navItems[i].current = false;
-        }
+      
 
-        createUserCard();
-        document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
+        
 
         
         document.getElementById('searchBtn').addEventListener('click', function() {searchAvailableAcc();});
@@ -487,7 +521,51 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             defaultRoomView();
         })
-                
+        document.getElementById('anyAcc').addEventListener('change', function() {
+            popularFilterChange();
+            document.getElementById('anyAcc').checked = true;
+            if(document.getElementById('anyAcc').checked){
+                units = units.filter(unit => unit.accommodationID === 'ACC001' || unit.accommodationID === 'ACC002' || unit.accommodationID === 'ACC003' || unit.accommodationID === 'ACC004');
+            } else {
+                units = units.filter(unit => unit.accommodationID === 'ACC001' || unit.accommodationID === 'ACC002' || unit.accommodationID === 'ACC003' || unit.accommodationID === 'ACC004');
+            }
+            defaultRoomView();
+        }) 
+        document.getElementById('appartle').addEventListener('change', function() {
+            popularFilterChange();
+            document.getElementById('appartle').checked = true;
+            if(document.getElementById('appartle').checked){
+                units = units.filter(unit => unit.accommodationID === 'ACC001');
+            } else {
+                units = units.filter(unit => unit.accommodationID !== 'ACC001');
+            }
+            defaultRoomView();
+        })
+        document.getElementById('seafrontSuite').addEventListener('change', function() {
+            popularFilterChange();
+            document.getElementById('seafrontSuite').checked = true;
+            if(document.getElementById('seafrontSuite').checked){
+                units = units.filter(unit => unit.accommodationID === 'ACC002');
+            }
+            defaultRoomView();
+        })
+        document.getElementById('balayAlumni').addEventListener('change', function() {
+            popularFilterChange();
+            document.getElementById('balayAlumni').checked = true;
+            if(document.getElementById('balayAlumni').checked){
+                units = units.filter(unit => unit.accommodationID === 'ACC003');
+            }
+            defaultRoomView();
+        })
+        document.getElementById('hostel').addEventListener('change', function() {
+            popularFilterChange();
+            document.getElementById('hostel').checked = true;
+            if(document.getElementById('hostel').checked){
+                units = units.filter(unit => unit.accommodationID === 'ACC004');
+            }
+            defaultRoomView();
+        })
+
 
 
 
@@ -538,6 +616,17 @@ document.addEventListener('DOMContentLoaded', function () {
         
     } 
     function handleBookingsPage() {
+
+        for(let i=0; i<navItems.length; i++) {
+            if(navItems[i].name === 'Bookings') {
+                navItems[i].current = true;
+                break;
+            }
+            navItems[i].current = false;
+        }
+        
+        createUserCard();
+        document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
         if (localStorage.getItem('loggedIn') === 'true') {
             document.querySelector('#userCard').style.display = 'block';
             const email = localStorage.getItem('email');
@@ -560,18 +649,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         } else {
             document.querySelector('#userCard').style.display = 'none';
-            window.location.href = 'login.html';
-        }
-        for(let i=0; i<navItems.length; i++) {
-            if(navItems[i].name === 'Bookings') {
-                navItems[i].current = true;
-                break;
-            }
-            navItems[i].current = false;
+            window.location.href = 'index.html';
         }
         
-        createUserCard();
-        document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
+        
+        document.getElementById('signOutBtn').addEventListener('click', function() {
+            localStorage.setItem('signOut', 'true');
+            safeRemoveItem('loggedIn');
+            safeRemoveItem('email');
+            safeRemoveItem('signOut');
+            window.location.href = 'index.html';
+        })
        
         if (localStorage.getItem('signOut') === 'true') {
             safeRemoveItem('loggedIn');
@@ -1513,10 +1601,10 @@ function createRooms(rooms, units) {
     container1.appendChild(roomType);
     container1.appendChild(roomNumber);
 
-    const reviews = document.createElement('div');
+    /*const reviews = document.createElement('div');
     reviews.className = "absolute flex justify-end  right-0 top-0 p-2 pr-4";
 
-    const container2 = document.createElement('div');
+   const container2 = document.createElement('div');
     container2.className = "w-20 block justify-end";
     const text2 = document.createElement('p');
     text2.className = "right-0 font-normal text-light text-right text-sm text-green-500 mr-2";
@@ -1535,16 +1623,27 @@ function createRooms(rooms, units) {
     container2.appendChild(text2);
     container2.appendChild(reviewCount);
     reviews.appendChild(container2);
-    reviews.appendChild(container3);
+    reviews.appendChild(container3);*/
 
     const container4 = document.createElement('div');
     container4.className = "absolute block text-right right-0 bottom-0 mb-1 p-2 pr-4";
     const price = document.createElement('p');
     price.className = "font-semibold";
-    price.textContent = `PHP ${units.price.toLocaleString('en-PH')}`;
+    
     const numberNights = document.createElement('div');
     numberNights.className = "font-light text-xs";
-    numberNights.textContent = "per night";
+    const startDate = document.getElementById('datepicker-range-start').value;
+    const endDate = document.getElementById('datepicker-range-end').value;
+    if(startDate !=='' && endDate !== '') {
+        const dateDiff = (new Date(endDate)).getTime() - (new Date(startDate)).getTime();
+        let days = dateDiff / (1000 * 3600 * 24);
+        let night = days > 1 ? 'nights' : 'night';
+        numberNights.textContent = `${days} ${night}`;
+        price.textContent = `PHP ${(units.price * days).toLocaleString('en-PH')}`;
+    } else {
+        numberNights.textContent = "per night";
+        price.textContent = `PHP ${units.price.toLocaleString('en-PH')}`;
+    }
     const detailesButton = document.createElement('button');
     detailesButton.className = "w-full text-sm text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold mt-2  py-2 px-8 rounded-full";
     detailesButton.textContent = "See Booking Details";
@@ -1557,7 +1656,7 @@ function createRooms(rooms, units) {
             }
             startCheckInDate = document.getElementById('datepicker-range-start').value ;
             localStorage.setItem('startDate', startCheckInDate);
-            endDate = document.getElementById('datepicker-range-end').value;
+            let endDate = document.getElementById('datepicker-range-end').value;
             localStorage.setItem('endDate', endDate);
             viewRoom(units.unitID); 
         })
@@ -1575,7 +1674,7 @@ function createRooms(rooms, units) {
 
 
     infoDiv.appendChild(container1);
-    infoDiv.appendChild(reviews);
+   // infoDiv.appendChild(reviews);
     infoDiv.appendChild(amenitiesContainer);
     infoDiv.appendChild(container4);
 
@@ -1693,7 +1792,7 @@ const navItems = [
     { name: "Home", href: "index.html", current: true },
     { name: "Book", href: "book.html", current: false},
     { name: "Bookings", href: "bookings.html", current: false},
-    { name: "Contact", href: "#" }
+    { name: "Contact", href: "" }
 ];
 
 const carouselItems = [

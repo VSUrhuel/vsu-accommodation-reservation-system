@@ -73,7 +73,7 @@
     <div class="flex flex-row h-full">
         <div class="h-full w-1/2">
             <div class="h-1/2 bg-gray-100 p-6 rounded-lg">
-                    <button>
+                    <button id="backBtn">
                         <svg
                         class="w-6 h-6 text-gray-800 dark:text-white"
                         aria-hidden="true"
@@ -234,35 +234,41 @@
 
             </div>
             <div class="h-1/2 w-full px-6 pb-6">
-                <p class="font-bold py-2 text-lg">Guest Rating</p>
-                <ul class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg ">
-                    <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                        <div class="flex items-center ps-3">
-                            <input id="vue-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                            <label for="vue-checkbox" 
-                            class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Any</label>
-                        </div>
-                    </li>
-                    <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                        <div class="flex items-center ps-3">
-                            <input id="react-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                            <label for="react-checkbox" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Excellent</label>
-                        </div>
-                    </li>
-                    <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                        <div class="flex items-center ps-3">
-                            <input id="angular-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                            <label for="angular-checkbox" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Very Good</label>
-                        </div>
-                    </li>
-                    <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                        <div class="flex items-center ps-3">
-                            <input id="laravel-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 ">
-                            <label for="laravel-checkbox" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Good</label>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+              <p class="font-bold py-2 text-lg">Accommodation Type</p>
+              <ul class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg ">
+                  <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                      <div class="flex items-center ps-3">
+                          <input id="anyAcc" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                          <label for="anyAcc" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Any</label>
+                      </div>
+                  </li>
+                  <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                      <div class="flex items-center ps-3">
+                          <input id="appartle" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                          <label for="appartle" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Appartle</label>
+                      </div>
+                  </li>
+                  <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                      <div class="flex items-center ps-3">
+                          <input id="seafrontSuite" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                          <label for="seafrontSuite" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Seafront Suite</label>
+                      </div>
+                  </li>
+                  <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                      <div class="flex items-center ps-3">
+                          <input id="balayAlumni" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                          <label for="balayAlumni" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Balay Alumni</label>
+                      </div>
+                  </li>
+                  <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                      <div class="flex items-center ps-3">
+                          <input id="hostel" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                          <label for="hostel" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Hostel</label>
+                      </div>
+                  </li>
+              </ul>
+
+          </div>
         </div>
         <div class="p-6 h-full w-full">
             <div class="relative block">
