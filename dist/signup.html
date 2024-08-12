@@ -37,7 +37,7 @@
             />
             <label
               for="floating_email"
-              class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+              class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
               >Email address</label
             >
           </div>
@@ -98,7 +98,7 @@
               />
               <label
                 for="floating_last_name"
-                class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                 >Last name</label
               >
             </div>
@@ -109,7 +109,7 @@
                 class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
               >
                 <svg
-                  class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                  class="w-4 h-4 text-gray-500"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -141,7 +141,7 @@
               />
               <label
                 for="floating_phone"
-                class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                 >Phone number (0913-456-7890)</label
               >
             </div>
@@ -200,7 +200,7 @@
                 aria-describedby="terms"
                 type="checkbox"
                 class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300"
-                required=""
+                required="true"
               />
             </div>
             <div class="ml-3 text-sm">
@@ -209,11 +209,157 @@
                 class="font-light text-gray-500 dark:text-gray-300"
                 >I accept the
                 <a
+                  data-modal-target="default-modal"
+                  data-modal-toggle="default-modal"
                   class="font-medium text-blue-600 hover:underline dark:text-blue-500"
                   href="#"
                   >Terms and Conditions</a
                 ></label
               >
+              <div
+                id="default-modal"
+                tabindex="-1"
+                aria-hidden="true"
+                class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+              >
+                <div class="relative p-4 w-full max-w-2xl max-h-full">
+                  <!-- Modal content -->
+                  <div
+                    class="relative bg-white rounded-lg shadow dark:bg-gray-700"
+                  >
+                    <!-- Modal header -->
+                    <div
+                      class="flex items-center justify-between p-4 md:p-5 border-b rounded-t"
+                    >
+                      <h3 class="text-xl font-semibold text-gray-900 e">
+                        Terms and Conditions for Hotel Reservation
+                      </h3>
+                      <button
+                        type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+                        data-modal-hide="default-modal"
+                      >
+                        <svg
+                          class="w-3 h-3"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 14 14"
+                        >
+                          <path
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                          />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                      </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-4 md:p-5 space-y-4">
+                      <ol class="list-decimal px-8">
+                        <li>
+                          <strong>Booking and Confirmation:</strong> By making a
+                          reservation through our website, you agree to the
+                          terms and conditions stated herein. The reservation is
+                          considered confirmed once you receive a booking
+                          confirmation email.
+                        </li>
+                        <li>
+                          <strong>Payment:</strong> Payment for the reservation
+                          will be processed at the time of booking. We accept
+                          major credit cards and online payment methods. All
+                          charges are in the local currency and include
+                          applicable taxes and fees.
+                        </li>
+                        <li>
+                          <strong>Cancellation and Refunds:</strong>
+                          Cancellation policies may vary depending on the rate
+                          plan and the specific hotel. Please refer to the
+                          cancellation policy stated during the booking process.
+                          Refunds, if applicable, will be processed according to
+                          the cancellation policy.
+                        </li>
+                        <li>
+                          <strong>Check-in and Check-out:</strong> Check-in time
+                          is from [time] onwards, and check-out time is before
+                          [time]. Early check-in or late check-out requests are
+                          subject to availability and may incur additional
+                          charges.
+                        </li>
+                        <li>
+                          <strong>Guest Responsibility:</strong> It is your
+                          responsibility to provide accurate and complete
+                          information during the reservation process. Any
+                          changes or modifications to the reservation should be
+                          communicated to the hotel in a timely manner.
+                        </li>
+                        <li>
+                          <strong>Hotel Policies:</strong> During your stay, you
+                          are expected to adhere to the hotel's policies and
+                          regulations, including but not limited to noise
+                          levels, smoking restrictions, and pet policies.
+                          Failure to comply may result in additional charges or
+                          termination of your reservation.
+                        </li>
+                        <li>
+                          <strong>Identification and Registration:</strong> You
+                          will be required to present a valid government-issued
+                          identification document, such as a passport or
+                          driver's license, during check-in. The hotel reserves
+                          the right to refuse check-in if proper identification
+                          is not provided.
+                        </li>
+                        <li>
+                          <strong>Guest Conduct:</strong> Guests are expected to
+                          conduct themselves in a respectful and responsible
+                          manner during their stay. Any disruptive or
+                          inappropriate behavior may lead to eviction from the
+                          hotel without refund.
+                        </li>
+                        <li>
+                          <strong>Liability and Damages:</strong> The university
+                          and the hotel shall not be held liable for any loss,
+                          damage, or theft of personal belongings during your
+                          stay. It is recommended to use the in-room safe or the
+                          hotel's safety deposit box for valuable items.
+                        </li>
+                        <li>
+                          <strong>Force Majeure:</strong> The university and the
+                          hotel shall not be responsible for any failure or
+                          delay in performing their obligations due to
+                          circumstances beyond their control, including but not
+                          limited to natural disasters, acts of terrorism, or
+                          government restrictions.
+                        </li>
+                      </ol>
+                    </div>
+                    <!-- Modal footer -->
+                    <div
+                      class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600"
+                    >
+                      <button
+                        id="acceptTerms"
+                        data-modal-hide="default-modal"
+                        type="button"
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                      >
+                        I accept
+                      </button>
+                      <button
+                        id="declineTerms"
+                        data-modal-hide="default-modal"
+                        type="button"
+                        class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                      >
+                        Decline
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <button

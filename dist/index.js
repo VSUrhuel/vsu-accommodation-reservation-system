@@ -1,8 +1,7 @@
+
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
-//import DateRangePicker from '/node_modules/flowbite-datepicker';
-import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js';
 import { getDatabase, ref, set, onValue, update } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js';
-// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBYOi_Y3now8wDYR1SrqMkMDqdEh4VsZgI",
     authDomain: "accommodation-reservatio-f8432.firebaseapp.com",
@@ -22,7 +21,9 @@ const database = getDatabase(app);
 var userEmail = '';
 let filters = [];
 document.addEventListener('DOMContentLoaded', function () {
-    //document.getElementById('scenic-views').innerHTML = scenicViews.map(createScenicView).join('');
+
+    document.addEventListener('mousemove', startSessionTimer);
+    document.addEventListener('keypress', startSessionTimer);
 
     function handleIndexPage() {
         localStorage.setItem('currentPage', 'index.html')
@@ -76,13 +77,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.location.href = 'login.html';
             });
         }
-        /*
-        const userBtn = document.getElementById('userBtn');
-        if (userBtn){
-            userBtn.addEventListener('click', function() {
-                window.location.href = 'profile.html';
-            });
-        }*/
 
         const signOutBtn = document.getElementById('signOutBtn');
         if (signOutBtn) {
@@ -93,10 +87,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.location.href = 'index.html';
             });
         }
-
-
-
-        
 
         if (localStorage.getItem('signOut') === 'true') {
             safeRemoveItem('loggedIn');
@@ -110,7 +100,37 @@ document.addEventListener('DOMContentLoaded', function () {
         if (localStorage.getItem('loggedIn') === 'true') {
             window.location.href = 'index.html';
         }
+
+        document.getElementById('forgotPass').addEventListener('click', function(){
+            if(document.getElementById('email').value === '') {
+                alert('Please enter your email address');
+                document.getElementById('email').className = 'bg-gray-50 border border-red-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5';
+                return;
+            } else {
+                const email = document.getElementById('email').value;
+                
+                sendPasswordResetEmail(auth, email).then(function(){
+                    alert("Password reset email has been sent. Please check your inbox.");
+                }).catch(function(error){
+                    alert("Failed to send password reset email: " + error.message);
+                })
+
+            }
+        })
         
+        if(!document.getElementById('remember').checked) {
+            startSessionTimer();
+        }   
+
+        document.getElementById('logInBtn').addEventListener('click', function() {
+            if(document.getElementById('email').value == ''){
+                document.getElementById('email').className = 'bg-gray-50 border border-red-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5';
+            } 
+            if (document.getElementById('password').value == '') {
+                document.getElementById('password').className = 'bg-gray-50 border border-red-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5';
+            }
+            return;
+        })
         const loginForm = document.getElementById("logInForm");
         if (loginForm) {
             loginForm.addEventListener('submit', logInAcc);
@@ -122,65 +142,33 @@ document.addEventListener('DOMContentLoaded', function () {
         if (localStorage.getItem('loggedIn') === 'true') {
             window.location.href = 'index.html';
         }
+
+        document.getElementById('acceptTerms').addEventListener('click', function() {
+            document.getElementById('terms').checked = true;
+        })
+
+        document.getElementById('declineTerms').addEventListener('click', function() {
+            document.getElementById('terms').checked = false;
+        })
         
         const signInForm = document.querySelector('#signInForm');
         if (signInForm) {
             signInForm.addEventListener('submit', createAccount);
         }
-        // document.querySelector('#createAccount').addEventListener('submit', createAccount);
+    
         document.getElementById('googleSignIn').addEventListener('click', signInGoogle);
         document.getElementById('fbSignIn').addEventListener('click', signInFacebook);
 
-        
         const datepickerStart = document.getElementById('birthday_picker');
         const today = new Date().toLocaleDateString();
         datepickerStart.setAttribute(`datepicker-max-date`, today);
-
     }
-
-    /*function handleProfilePage() {
-        createUserCard();
-        populateNavItems();
-        const email = localStorage.getItem('email');
-        const userRef = ref(database, 'user');
-    
-        fetchUserData(userRef, email, populateProfileInfo);
-    
-        setupSignOutButton();
-        setupEditProfileButton(userRef, email);
-        
-        handleSignOutRedirect();
-
-        //IM HERE HAVING ISSUE
-
-       const profileForm = document.getElementById('profileForm');
-        if (profileForm) {
-            profileForm.addEventListener('submit', function(evet) {
-                event.preventDefault();
-                const newPhoneNumber = document.getElementById('editPhoneNumber').textContent;
-                const newBirthday = document.getElementById('editBirthday').value;
-                const newFirstName = document.getElementById('editFirstName').value;
-                const newLastName = document.getElementById('editLastName').value;
-                alert(newPhoneNumber);
-
-                set(ref(database, `user/${localStorage.getItem('userKey')}`), {
-                    email: localStorage.getItem('email'),
-                    phoneNumber: newPhoneNumber,
-                    birthday: newBirthday,
-                    firstName: newFirstName,
-                    lastName: newLastName
-                });
-
-                alert('Profile updated successfully');
-                window.location.href = 'profile.html';
-            });
-        }
-    }*/
 
     function handleProfilePage() {
         for(let i=0; i<navItems.length; i++) {
             navItems[i].current = false;
         }
+
         createUserCard();
         document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
         const email = localStorage.getItem('email');
@@ -191,13 +179,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 snapshot.forEach((data) => {
                     if (data.val().email === email) {
                         document.getElementById('profileName').textContent = `${data.val().firstName} ${data.val().lastName}`;
-
                         document.getElementById('profileName1').textContent = `${data.val().firstName} ${data.val().lastName}`;
                         document.getElementById('profileEmail').textContent = data.val().email;
                         document.getElementById('profileEmailInfo').textContent = data.val().email;
                         document.getElementById('profilePhone').textContent = data.val().phoneNumber;
                         document.getElementById('profileBirthday').textContent = data.val().birthday;
-
                         document.getElementById('firstName').textContent = data.val().firstName;
                         document.getElementById('lastName').textContent = data.val().lastName;
                     }
@@ -210,10 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const signOutBtn = document.getElementById('signOutBtn');
         if (signOutBtn) {
             signOutBtn.addEventListener('click', function () {
-
                 localStorage.setItem('signOut', 'true');
-
-                // Redirect to the home page
                 window.location.href = 'index.html';
             });
         }
@@ -221,8 +204,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const editProfile = document.getElementById('editProfile');
         if (editProfile) {
             editProfile.addEventListener('click', function () {
-                //HEREREEEEEEE
-
                 document.getElementById('profileInfo').style.display = 'none';
                 document.getElementById('editProfileForm').style.display = 'block';
 
@@ -249,12 +230,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const today = new Date().toLocaleDateString();
         datepickerStart.setAttribute(`datepicker-min-date`, today);
 
-
-
         const profileForm = document.getElementById('profileForm');
         if (profileForm) {
-            profileForm.addEventListener('submit', function (evet) {
-                event.preventDefault();
+            profileForm.addEventListener('submit', function () {
                 const newPhoneNumber = document.getElementById('editPhoneNumber').value;
                 const newBirthday = document.getElementById('editBirthday').value;
                 const newFirstName = document.getElementById('editFirstName').value;
@@ -272,7 +250,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.location.href = 'profile.html';
             });
 
-
             if (localStorage.getItem('signOut') === 'true') {
                 safeRemoveItem('loggedIn');
                 safeRemoveItem('email');
@@ -281,6 +258,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
+
     function handleRoomPage() {
         for(let i=0; i<navItems.length; i++) {
             navItems[i].current = false;
@@ -291,6 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('backBtn').addEventListener('click', function() {
             window.location.href = localStorage.getItem('previousPage');
         })
+
         createUserCard();
         document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
 
@@ -343,7 +322,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 }
             });
-            //document.getElementById('roomDescription').textContent = 
             
             let startDate = localStorage.getItem('startDate');
             document.getElementById('checkInDate').textContent = convertDate(startDate);
@@ -359,7 +337,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const amenitiesList = document.getElementById('amenities');
 
-            // Clear the existing list if any
             amenitiesList.innerHTML = '';
             console.log(room.amenities);
             var i = 0;
@@ -373,10 +350,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     amenity.className = 'inline-flex items-center ml-6';
                 }
 
-                // Find the corresponding amenity object
                 let amenityData = amenities.find(a => a.name === x);
 
-                // Handle special case for 'bed'
                 if (x.includes('bed')) {
                     amenityData = amenities.find(a => a.name === 'bed');
                 }
@@ -391,15 +366,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     } else {
                         title.textContent = x;
                     }
-
                     amenity.appendChild(title);
                     amenitiesList.appendChild(amenity);
                 }
             });
-
-           
-           
-    
         }
 
         if (localStorage.getItem('signOut') === 'true') {
@@ -413,9 +383,11 @@ document.addEventListener('DOMContentLoaded', function () {
             bookReservation();
         });
     }
+
     function handleBookPage() {
         localStorage.setItem('previousPage', localStorage.getItem('currentPage'));
         localStorage.setItem('currentPage', 'book.html');
+
         document.getElementById('backBtn').addEventListener('click', function() {
             window.location.href = localStorage.getItem('previousPage');
         })
@@ -430,6 +402,7 @@ document.addEventListener('DOMContentLoaded', function () {
             navItems[i].current = false;
             console.log("remove");
         }
+
         createUserCard();
         document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
         
@@ -455,6 +428,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('#userCard').style.display = 'none';
             window.location.href = 'login.html';
         }
+
         document.getElementById('signOutBtn').addEventListener('click', function() {
             localStorage.setItem('signOut', 'true');
             safeRemoveItem('loggedIn');
@@ -463,13 +437,6 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.href = 'login.html';
         })
 
-    
-
-      
-
-        
-
-        
         document.getElementById('searchBtn').addEventListener('click', function() {
             if(document.getElementById('showerFilter').checked) {
                 document.getElementById('showerFilter').checked = false;
@@ -480,7 +447,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if(document.getElementById('tvFilter').checked) {
             document.getElementById('tvFilter').checked = false;
             }
-            
             searchAvailableAcc();
         });
         deafultAvailableAcc();
@@ -491,9 +457,9 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 filters.splice(filters.indexOf('Hot and Cold Shower'), 1);
             }
-            
             popularFilterChange();
         });
+
         document.getElementById('tvFilter').addEventListener('change', function() {
             if(document.getElementById('tvFilter').checked){
                 filters.push('Free TV');
@@ -503,6 +469,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             popularFilterChange();
         });
+
         document.getElementById('airconditionedFilter').addEventListener('change', function() {
             if(document.getElementById('airconditionedFilter').checked){
                 filters.push('Air Conditioning');
@@ -522,6 +489,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             defaultRoomView();
         })
+
         document.getElementById('less250').addEventListener('change', function() {
             popularFilterChange();
             document.getElementById('less250').checked = true;
@@ -532,6 +500,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             defaultRoomView();
         })
+
         document.getElementById('250-750').addEventListener('change', function() {
             popularFilterChange();
             document.getElementById('250-750').checked = true;
@@ -542,6 +511,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             defaultRoomView();
         })
+
         document.getElementById('750-1500').addEventListener('change', function() {
             popularFilterChange();
             document.getElementById('750-1500').checked = true;
@@ -552,6 +522,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             defaultRoomView();
         })
+
         document.getElementById('above1500').addEventListener('change', function() {
             popularFilterChange();
             document.getElementById('above1500').checked = true;
@@ -560,6 +531,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             defaultRoomView();
         })
+
         document.getElementById('anyAcc').addEventListener('change', function() {
             popularFilterChange();
             document.getElementById('anyAcc').checked = true;
@@ -570,6 +542,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             defaultRoomView();
         }) 
+
         document.getElementById('appartle').addEventListener('change', function() {
             popularFilterChange();
             document.getElementById('appartle').checked = true;
@@ -580,6 +553,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             defaultRoomView();
         })
+
         document.getElementById('seafrontSuite').addEventListener('change', function() {
             popularFilterChange();
             document.getElementById('seafrontSuite').checked = true;
@@ -588,6 +562,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             defaultRoomView();
         })
+
         document.getElementById('balayAlumni').addEventListener('change', function() {
             popularFilterChange();
             document.getElementById('balayAlumni').checked = true;
@@ -596,6 +571,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             defaultRoomView();
         })
+
         document.getElementById('hostel').addEventListener('change', function() {
             popularFilterChange();
             document.getElementById('hostel').checked = true;
@@ -605,55 +581,14 @@ document.addEventListener('DOMContentLoaded', function () {
             defaultRoomView();
         })
 
-
-
-
-
         const datepickerStart = document.getElementById('datepicker-range-start');
         const today = new Date().toLocaleDateString();
         datepickerStart.setAttribute(`datepicker-min-date`, today);
 
         const datepickerEnd = document.getElementById('datepicker-range-end');
         datepickerEnd.setAttribute(`datepicker-min-date`, today);
-
-       /* document.getElementById('page2').addEventListener('click', function() { paginationView(2); })
-        document.getElementById('page1').addEventListener('click', function() { paginationView(1); })
-        document.getElementById('page3').addEventListener('click', function() { paginationView(3); })
-        document.getElementById('page4').addEventListener('click', function() { paginationView(4); })
-        document.getElementById('page5').addEventListener('click', function() { paginationView(5); })
-        document.getElementById('page6').addEventListener('click', function() { paginationView(6); })
-        document.getElementById('page7').addEventListener('click', function() { paginationView(7); })*/
-
-       
-        /*let i=0;
-
-        const userRef = ref(database, 'unit');
-        const rooms = document.getElementById('rooms');
-        onValue(userRef, (snapshot) => {
-            if (snapshot.exists()) {
-                snapshot.forEach((data) => {
-                    if (i==4 || data.val().reservation.reserved){
-                        return;
-                    }
-                    i++;
-                    let unit = {};
-                    unit.accommodationID = data.val().accommodationID;
-                    unit.amenities = data.val().amenities;
-                    unit.availability = data.val().availability;
-                    unit.capacity = data.val().capacity;
-                    unit.price = data.val().price;
-                    unit.unitID = data.val().unitID;
-                    unit.unitNumber = data.val().unitNumber;
-                    unit.unitType = data.val().unitType;
-                    unit.reservation = data.val().reservation;
-                    createRooms(rooms, unit);
-                });
-            }
-        })*/
-
-        
-        
     } 
+
     function handleBookingsPage() {
 
         for(let i=0; i<navItems.length; i++) {
@@ -666,6 +601,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         createUserCard();
         document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
+
         if (localStorage.getItem('loggedIn') === 'true') {
             document.querySelector('#userCard').style.display = 'block';
             const email = localStorage.getItem('email');
@@ -691,7 +627,6 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.href = 'index.html';
         }
         
-        
         document.getElementById('signOutBtn').addEventListener('click', function() {
             localStorage.setItem('signOut', 'true');
             safeRemoveItem('loggedIn');
@@ -711,10 +646,8 @@ document.addEventListener('DOMContentLoaded', function () {
     
             window.location.href = 'book.html';
         })
-       
-
-       
     } 
+
     function handleAboutPage() {
         for(let i=0; i<navItems.length; i++) {
             if(navItems[i].name === 'About'){
@@ -760,9 +693,8 @@ document.addEventListener('DOMContentLoaded', function () {
             safeRemoveItem('signOut');
             window.location.href = 'index.html';
         })
-
-
     }
+
     if (document.body.classList.contains('index-page')) {
         handleIndexPage();
     } else if (document.body.classList.contains('login-page')) {
@@ -782,12 +714,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 }) 
 
-let bookedUnits = [];
+// Global variables
+let bookedUnits = [], units = [], isSubmitting = false, timeOutId, sessionTimeout = 10 * 60 * 1000;
+
+function startSessionTimer() {
+    if(timeOutId) {
+        timeOutId = '';
+    }
+    timeOutId = setTimeout(function() {
+        localStorage.setItem('signOut', 'true');
+        safeRemoveItem('loggedIn');
+        safeRemoveItem('email');
+        safeRemoveItem('signOut');
+        window.location.href = 'index.html';
+    }, sessionTimeout);
+}
 
 function getBookedUnits(userID) {
-
     bookedUnits = [];
-    
     const reservationRef = ref(database, 'reservation');
     onValue(reservationRef, (snapshot) => {
         if (snapshot.exists()) {
@@ -978,12 +922,9 @@ function createBookingUnit(container, units) {
     const reviews = document.createElement('div');
     reviews.className = "absolute flex justify-end  right-0 top-0 p-2 pr-4";
 
-    
-
     let timeDiff = (new Date(units.reservation.endDate)).getTime() - (new Date(units.reservation.startDate)).getTime();
     let days = timeDiff / (1000 * 3600 * 24);
     let night = days > 1 ? 'nights' : 'night';
-
 
     const container4 = document.createElement('div');
     container4.className = "absolute block text-right right-0 bottom-0 mb-1 p-2 pr-4";
@@ -1006,14 +947,10 @@ function createBookingUnit(container, units) {
     container4.appendChild(numberNights);
     container4.appendChild(dateRange);
 
-
-
     infoDiv.appendChild(container1);
     infoDiv.appendChild(reviews);
     infoDiv.appendChild(amenitiesContainer);
     infoDiv.appendChild(container4);
-
-
 }
 
 function validCardNumber(number) {
@@ -1023,13 +960,13 @@ function validCardNumber(number) {
     }
     return true;
 }
-async function bookReservation() {
-  
 
+async function bookReservation() {
     const cardName = document.getElementById('cardName');
     const cardNumber = document.getElementById('cardNumber');
     const validityDate = document.getElementById('validityDate');
     const cvc = document.getElementById('cvc');
+
     let notAllowed = false;
     if(cardName.value === '') {
         cardName.className = 'bg-gray-50 border border-red-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-64 ps-3 p-2.5';
@@ -1061,7 +998,6 @@ async function bookReservation() {
     const currentDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
     const paymentID = await fetchLatestPaymentID();
 
-
     set(ref(database, `payment/${paymentID}`), {
         nameOnCard: cardName.value,
         cardNumber: cardNumber.value,
@@ -1076,7 +1012,6 @@ async function bookReservation() {
     const roomGet = JSON.parse(localStorage.getItem('roomData'));
     const roomID = roomGet.unitId;
   
-
     set(ref(database, `reservation/${reservationID}`), {
         paymentID: paymentID,
         reservationID: reservationID,
@@ -1084,9 +1019,7 @@ async function bookReservation() {
         unitID: roomID
     });
 
-
     const room = JSON.parse(localStorage.getItem('roomData'));
-    
     
     const userRef = ref(database, 'unit');
     onValue(userRef, (snapshot) => {
@@ -1099,7 +1032,6 @@ async function bookReservation() {
                         endDate: localStorage.getItem('endDate')
                     };
                     update(ref(database, `unit/${room.unitId}/reservation`), reservation);
-                    
                    
                     window.location.href = 'index.html';
                 }
@@ -1111,7 +1043,6 @@ async function bookReservation() {
 }
 
 function convertDate(date) {
-   
     const dateParts = date.split("/");
     const dateObj = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
     const dayOfWeek = dateObj.toLocaleDateString('en-US', {weekday: 'long'});
@@ -1125,7 +1056,7 @@ function popularFilterChange() {
     if(document.getElementById('less250') || document.getElementById('250-750') || document.getElementById('750-1500') || document.getElementById('above1500')) {
         document.getElementById('anyPrice').checked = true;
     }
-    console.log(units.length);
+    
     searchAvailableAcc();
     const filteredUnits = [];
     for (let i = 0; i < units.length; i++) {
@@ -1152,6 +1083,7 @@ function popularFilterChange() {
     document.getElementById('pagination').innerHTML = '';
     document.getElementById('pagination').appendChild(createPaginationBar(Math.ceil(filteredUnits.length/5)));
 }
+
 function formatDate(dateString) {
     const date = new Date(dateString);
 
@@ -1165,8 +1097,6 @@ function formatDate(dateString) {
     
     return `${month} ${day}`;
 }
-
-let units = [];
 
 function deafultAvailableAcc() {
     const userRef = ref(database, 'unit');
@@ -1215,10 +1145,10 @@ function convertToDateObj(date) {
 }
 
 function searchAvailableAcc() {
-   
     const rooms = document.getElementById('rooms');
     const startDate = document.getElementById('datepicker-range-start').value;
     const endDate = document.getElementById('datepicker-range-end').value;
+
     if(startDate == ''  && endDate == ''){
         document.getElementById('defualtInfo').style.display = 'block';
         document.getElementById('searchInfo').style.display = 'hidden';
@@ -1234,6 +1164,7 @@ function searchAvailableAcc() {
         document.getElementById('datepicker-range-end').classList = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5';
 
     }
+
     units = [];
    
     const userRef = ref(database, 'unit');
@@ -1281,7 +1212,6 @@ function searchAvailableAcc() {
 }
 
 function defaultRoomView() {
-    console.log(units);
     document.getElementById('rooms').innerHTML = '';
     for(let i=0; i<5 && i<units.length; i++){
         createRooms(rooms, units[i]);
@@ -1297,7 +1227,6 @@ function createPaginationBar(numPages) {
   const ul = document.createElement('ul');
   ul.classList.add('flex', 'items-center', '-space-x-px', 'h-8', 'text-sm');
 
-  // Previous page button
   const prevPageLi = document.createElement('li');
   const prevPageLink = document.createElement('a');
   prevPageLink.setAttribute('id', 'prevPage');
@@ -1322,7 +1251,6 @@ function createPaginationBar(numPages) {
   prevPageLi.appendChild(prevPageLink);
   ul.appendChild(prevPageLi);
 
-  // Page buttons
   for (let i = 1; i <= numPages; i++) {
     let color = '';
     if(i==1){
@@ -1346,7 +1274,6 @@ function createPaginationBar(numPages) {
     }
   }
 
-  // Next page button
   const nextPageLi = document.createElement('li');
   const nextPageLink = document.createElement('a');
   nextPageLink.setAttribute('id', 'nextPage');
@@ -1395,7 +1322,6 @@ function paginationView(pageNum, max){
     for (let k = start; k < units.length && k < end; k++) {
         createRooms(rooms, units[k]);
     }
-   
 }
 
 function titleCase(str){
@@ -1405,6 +1331,7 @@ function titleCase(str){
     }
     return str.join(' ');
 }
+
 function viewAccommodations() {
     let accommodations = [];
     const userRef = ref(database, 'accommodations');
@@ -1422,7 +1349,7 @@ function viewAccommodations() {
                 };
                 accommodations.push(acc);
             });
-            // Update the DOM after processing all data
+            
             const accommodationsContainer = document.getElementById('accommodations');
             accommodationsContainer.innerHTML = accommodations.map(createAccommodation).join('');
 
@@ -1431,9 +1358,6 @@ function viewAccommodations() {
                     const button = event.target.closest('.dynamic-button');
                     const accommodationId = button.getAttribute('data-id');
                     window.location.href = 'book.html';
-                    //alert(`Button clicked for accommodation ID: ${accommodationId}`);
-                    //viewRoom('UNT001');
-                    // Add your event handling logic here
                 }
             });
         } else {
@@ -1443,10 +1367,6 @@ function viewAccommodations() {
         console.error('Error fetching data:', error);
     });
 
-}
-
-function populateNavItems() {
-    document.getElementById('nav-items').innerHTML = navItems.map(createNavItem).join('');
 }
 
 function fetchUserData(userRef, email, callback) {
@@ -1463,62 +1383,7 @@ function fetchUserData(userRef, email, callback) {
     });
 }
 
-function populateProfileInfo(userData) {
-    document.getElementById('profileName').textContent = `${userData.firstName} ${userData.lastName}`;
-    document.getElementById('profileEmail').textContent = userData.email;
-    document.getElementById('profileEmailInfo').textContent = userData.email;
-    document.getElementById('profilePhone').textContent = userData.phoneNumber;
-    document.getElementById('profileBirthday').textContent = userData.birthday;
-
-    document.getElementById('firstName').textContent = userData.firstName;
-    document.getElementById('lastName').textContent = userData.lastName;
-
-}
-
-function setupSignOutButton() {
-    const signOutBtn = document.getElementById('signOutBtn');
-    if (signOutBtn) {
-        signOutBtn.addEventListener('click', function () {
-            localStorage.setItem('signOut', 'true');
-            window.location.href = 'index.html';
-        });
-    }
-}
-
-function setupEditProfileButton(userRef, email) {
-    const editProfile = document.getElementById('editProfile');
-    if (editProfile) {
-        editProfile.addEventListener('click', function () {
-            document.getElementById('profileInfo').style.display = 'none';
-            document.getElementById('editProfileForm').style.display = 'block';
-
-            fetchUserData(userRef, email, populatedEditProfileInfo);
-        });
-    }
-}
-
-function populatedEditProfileInfo(userData) {
-    document.getElementById('editEmail').textContent = userData.email;
-    document.getElementById('editPhoneNumber').textContent = userData.phoneNumber;
-    document.getElementById('editBirthday').textContent = userData.birthday;
-
-    document.getElementById('editFirstName').textContent = userData.firstName;
-    document.getElementById('editLastName').textContent = userData.lastName;
-
-}
-
-function handleSignOutRedirect() {
-    if (localStorage.getItem('signOut') === 'true') {
-        safeRemoveItem('loggedIn');
-        safeRemoveItem('email');
-        safeRemoveItem('signOut');
-        window.location.href = 'index.html';
-    }
-}
-let startCheckInDate = '', endDate = '';
 function createRooms(rooms, units) {
-   // rooms.innerHTML = '';
-    let data = units;
     const innerDiv = document.createElement('div');
     innerDiv.className = 'my-2 p-3 border-2 border-black h-44 w-full rounded-lg relative';
     rooms.appendChild(innerDiv);
@@ -1528,7 +1393,15 @@ function createRooms(rooms, units) {
     innerDiv.appendChild(flexDiv);
 
     const img = document.createElement('img');
-    img.src = '/src/hotel-room2.jpg';
+    if (units.accommodationID == 'ACC001') {
+        img.src = '/src/hotel-room2.jpg';
+    } else if (units.accommodationID === 'ACC002') {
+        img.src = '/src/hotel-room3.jpg';
+    } else if (units.accommodationID === 'ACC003') {
+        img.src = '/src/hotel-room4.jpg';
+    } else if (units.accommodationID === 'ACC004'){
+        img.src = '/src/hotel-room.jpg';
+    }
     img.alt = '';
     img.className = 'rounded-lg object-cover w-60';
     flexDiv.appendChild(img);
@@ -1539,7 +1412,6 @@ function createRooms(rooms, units) {
 
     const roomTitle = document.createElement('p');
     roomTitle.className = 'font-bold';
-    let accommodationName = '';
     const userRef = ref(database, 'accommodations');
     onValue(userRef, (snapshot) => {
         if(snapshot.exists()){
@@ -1572,7 +1444,6 @@ function createRooms(rooms, units) {
         let amenityName = units.amenities[i];
         let amenityData = amenities.find(a => a.name === amenityName);
 
-                // Handle special case for 'bed'
         if (amenityName.includes('bed')) {
             amenityData = amenities.find(a => a.name === 'bed');
         }
@@ -1591,6 +1462,7 @@ function createRooms(rooms, units) {
             amenitiesList.appendChild(amenity);
         }
     }
+
     leftContainer.appendChild(amenitiesList);
 
     const rightContainer = document.createElement('div');
@@ -1671,30 +1543,6 @@ function createRooms(rooms, units) {
     container1.appendChild(roomType);
     container1.appendChild(roomNumber);
 
-    /*const reviews = document.createElement('div');
-    reviews.className = "absolute flex justify-end  right-0 top-0 p-2 pr-4";
-
-   const container2 = document.createElement('div');
-    container2.className = "w-20 block justify-end";
-    const text2 = document.createElement('p');
-    text2.className = "right-0 font-normal text-light text-right text-sm text-green-500 mr-2";
-    text2.textContent = "Excellent";
-    const reviewCount = document.createElement('p');
-    reviewCount.className = "font-light text-xs text-right mr-2";
-    reviewCount.textContent = "100 reviews";
-
-    const container3 = document.createElement('div');
-    container3.className = "bg-green-300 rounded-lg px-3 items-center justify-center h-6 mt-2";
-    const text3 = document.createElement('p');
-    text3.className = "font-normal text-bold text-xs items-center justify-center mt-1 text-green-700 rounded-full";
-    text3.textContent = "9.8";
-
-    container3.appendChild(text3);
-    container2.appendChild(text2);
-    container2.appendChild(reviewCount);
-    reviews.appendChild(container2);
-    reviews.appendChild(container3);*/
-
     const container4 = document.createElement('div');
     container4.className = "absolute block text-right right-0 bottom-0 mb-1 p-2 pr-4";
     const price = document.createElement('p');
@@ -1718,40 +1566,26 @@ function createRooms(rooms, units) {
     detailesButton.className = "w-full text-sm text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold mt-2  py-2 px-8 rounded-full";
     detailesButton.textContent = "See Booking Details";
    
-        detailesButton.addEventListener('click', function() { 
-            if (document.getElementById('datepicker-range-start').value === '' && document.getElementById('datepicker-range-end').value === '') {
-                document.getElementById('datepicker-range-start').className = 'bg-red-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5'
-                 document.getElementById('datepicker-range-end').className = 'bg-red-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  block w-full ps-10 p-2.5'
-                return;
-            }
-            startCheckInDate = document.getElementById('datepicker-range-start').value ;
-            localStorage.setItem('startDate', startCheckInDate);
-            let endDate = document.getElementById('datepicker-range-end').value;
-            localStorage.setItem('endDate', endDate);
-            viewRoom(units.unitID); 
-        })
-    
-    
-    
-   
-
-
+    detailesButton.addEventListener('click', function() { 
+        if (document.getElementById('datepicker-range-start').value === '' && document.getElementById('datepicker-range-end').value === '') {
+            document.getElementById('datepicker-range-start').className = 'bg-red-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5'
+                document.getElementById('datepicker-range-end').className = 'bg-red-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  block w-full ps-10 p-2.5'
+            return;
+        }
+        let startCheckInDate = document.getElementById('datepicker-range-start').value ;
+        localStorage.setItem('startDate', startCheckInDate);
+        let endDate = document.getElementById('datepicker-range-end').value;
+        localStorage.setItem('endDate', endDate);
+        viewRoom(units.unitID); 
+    })
 
     container4.appendChild(price);
     container4.appendChild(numberNights);
     container4.appendChild(detailesButton);
 
-
-
     infoDiv.appendChild(container1);
-   // infoDiv.appendChild(reviews);
     infoDiv.appendChild(amenitiesContainer);
     infoDiv.appendChild(container4);
-
-
-   
-    /**/
-
 }
 
 const amenities = [
@@ -1877,17 +1711,6 @@ const tableContent = [
     { accommodation: "Which accommodation do you prefer?", details: "Check Details", checkIn: "Add Date", checkOut: "Add Date" }
 ];
 
-const scenicViews = [
-    { src: "/src/vsu-scenic-view/vsu1.jpg", alt: "VSU Admin", description: "VSU Admin" },
-    { src: "/src/vsu-scenic-view/vsu3.jpg", alt: "VSU Beach", description: "VSU Beach" },
-    { src: "/src/vsu-scenic-view/vsu4.jpg", alt: "Search for Truth", description: "Search for Truth" },
-    { src: "/src/vsu-scenic-view/vsu5.jpg", alt: "Mt. Pangasugan", description: "Mt. Pangasugan" },
-    { src: "/src/vsu-scenic-view/vsu6.jpg", alt: "Centennial Gate", description: "Centennial Gate" },
-    { src: "/src/vsu-scenic-view/vsu2.jpg", alt: "VSU Lower Campus", description: "VSU Lower Campus" }
-];
-
-
-
 function createNavItem(item) {
     return `
         <li>
@@ -1917,27 +1740,6 @@ function createTableRow(row) {
     `;
 }
 
-function createInputField(data) {
-    return `<div class="relative">
-                  <input
-                    type="text"
-                    value="${data.info}"
-                    id=""
-                    class="px-3 py-2 text-xs font-medium text-left inline-flex items-center text-black bg-white rounded-lg focus:outline-none"
-                  />
-                </div>;`
-
-}
-function createScenicView(view) {
-    return `
-        <div class="grid gap-4">
-            <div class="relative">
-                <img class="h-36 w-96 max-w-full rounded-lg object-cover" src="${view.src}" alt="${view.alt}">
-                <p class="absolute flex text-black text-sm font-medium bg-white/50 rounded-full p-2 px-5 mb-2 mr-2 bottom-0 right-0 justify-center items-center">${view.description}</p>
-            </div>
-        </div>`;
-}
-
 function safeRemoveItem(key) {
     if (localStorage.getItem(key) !== null) {
         localStorage.removeItem(key);
@@ -1950,11 +1752,9 @@ function safeRemoveItem(key) {
 function createUserCard() {
     const userCard = document.getElementById('userCard');
 
-    // Create the inner flex container
     const flexContainer = document.createElement('div');
     flexContainer.className = 'flex items-center gap-4 h-10';
 
-    // Create the user image
     const userImg = document.createElement('img');
     userImg.src = '/src/profile.png';
     userImg.alt = 'user';
@@ -1965,17 +1765,14 @@ function createUserCard() {
     userImg.setAttribute('data-dropdown-delay', '300');
     userImg.setAttribute('data-dropdown-trigger', 'hover');
 
-    // Create the dropdown div
     const dropdownDiv = document.createElement('div');
     dropdownDiv.id = 'dropdownDelay';
     dropdownDiv.className = 'z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44';
 
-    // Create the dropdown ul
     const dropdownUl = document.createElement('ul');
     dropdownUl.className = 'py-2 text-sm text-gray-700 dark:text-gray-200';
     dropdownUl.setAttribute('aria-labelledby', 'dropdownDelayButton');
 
-    // Create the profile list item
     const profileLi = document.createElement('li');
     const profileLink = document.createElement('a');
     profileLink.href = 'profile.html';
@@ -1983,7 +1780,6 @@ function createUserCard() {
     profileLink.textContent = 'Profile';
     profileLi.appendChild(profileLink);
 
-    // Create the sign out list item
     const signOutLi = document.createElement('li');
     const signOutLink = document.createElement('a');
     signOutLink.href = '';
@@ -1992,42 +1788,33 @@ function createUserCard() {
     signOutLink.textContent = 'Sign out';
     signOutLi.appendChild(signOutLink);
 
-    // Append list items to the dropdown ul
     dropdownUl.appendChild(profileLi);
     dropdownUl.appendChild(signOutLi);
 
-    // Append ul to the dropdown div
     dropdownDiv.appendChild(dropdownUl);
 
-    // Create the profile info div
     const profileInfoDiv = document.createElement('div');
     profileInfoDiv.className = 'font-medium text-black';
 
-    // Create the profile name div
     const profileNameDiv = document.createElement('div');
     profileNameDiv.id = 'profileName';
     profileNameDiv.textContent = 'Rhuel Laurente';
 
-    // Create the profile email div
     const profileEmailDiv = document.createElement('div');
     profileEmailDiv.className = 'text-sm text-gray-500 hover:underline hover:text-blue-600 cursor-pointer';
     profileEmailDiv.id = 'profileEmail';
     profileEmailDiv.textContent = 'johnrhuell@gmail.com';
 
-    // Append name and email to the profile info div
     profileInfoDiv.appendChild(profileNameDiv);
     profileInfoDiv.appendChild(profileEmailDiv);
 
-    // Append image, dropdown, and profile info to the flex container
     flexContainer.appendChild(userImg);
     flexContainer.appendChild(dropdownDiv);
     flexContainer.appendChild(profileInfoDiv);
 
-    // Append the flex container to the main container
     userCard.appendChild(flexContainer);
-
-    // Append the main container to the body or a specific parent element
 }
+
 function createAccommodation(accommodation) {
     return `
         <div class="grid gap-4 items-center">
@@ -2055,7 +1842,6 @@ function createAccommodation(accommodation) {
         </div>`;
 }
 
-
 function viewRoom(unitId) {
     const roomRef = ref(database, 'unit');
     let room = {};
@@ -2074,7 +1860,7 @@ function viewRoom(unitId) {
                         unitType: data.val().unitType,
                         reservation: data.val().reservation
                     };
-                    //console.log(room);
+
                     if (localStorage.getItem('roomData')) {
                         localStorage.removeItem('roomData');
                     }
@@ -2088,13 +1874,7 @@ function viewRoom(unitId) {
     }, (error) => {
         console.error('Error fetching data:', error);
     });
-  }
-  
-function setUpRoom(room) {
-    window.location.href = 'room.html';
-
 }
-let isSubmitting = false;
 
 function logInAcc(event) {
     event.preventDefault();
@@ -2122,7 +1902,6 @@ function logInAcc(event) {
                 }
             });
             if (!userFound) {
-                alert('User not found or incorrect password');
                 isSubmitting = false; // Reset the flag
             }
         } else {
@@ -2134,6 +1913,7 @@ function logInAcc(event) {
         isSubmitting = false; // Reset the flag
     });
 }
+
 function signInGoogle() {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider).then((result) => {
@@ -2179,7 +1959,7 @@ function signInFacebook() {
 }
 
 async function createAccount(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
+    event.preventDefault();
 
     const floating_email = document.querySelector('#floating_email').value;
     const floating_password = document.querySelector('#floating_password').value;
@@ -2215,7 +1995,6 @@ async function createAccount(event) {
     } catch (error) {
         console.error('Error creating user:', error);
     }
-
 }
 
 async function fetchLatestUserId() {
@@ -2261,10 +2040,10 @@ async function fetchLatestPaymentID() {
                     const newId = prefix + idNumber.toString().padStart(3, '0');
                     resolve(newId);
                 } else {
-                    resolve('PMT001'); // Default ID if no users exist
+                    resolve('PMT001'); // Default ID if no payment exist
                 }
             } else {
-                resolve('PMT001'); // Default ID if no users exist
+                resolve('PMT001'); // Default ID if no payment exist
             }
         }, (error) => {
             reject(error);
@@ -2288,14 +2067,13 @@ async function fetchLatestReservationID() {
                     const newId = prefix + idNumber.toString().padStart(3, '0');
                     resolve(newId);
                 } else {
-                    resolve('RES001'); // Default ID if no users exist
+                    resolve('RES001'); // Default ID if no reservation exist
                 }
             } else {
-                resolve('RES001'); // Default ID if no users exist
+                resolve('RES001'); // Default ID if no reservation exist
             }
         }, (error) => {
             reject(error);
         });
     });
 }
-
