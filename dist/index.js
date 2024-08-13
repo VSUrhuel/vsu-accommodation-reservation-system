@@ -768,7 +768,7 @@ function getBookedUnits(userID) {
 function createBookingUnit(container, units) {
     let data = units;
     const innerDiv = document.createElement('div');
-    innerDiv.className = 'my-2 p-3 border-2 border-black h-44 w-full rounded-lg relative';
+    innerDiv.className = 'mb-2 p-3 border-2 border-gray-300 h-52 w-full rounded-lg relative';
     container.appendChild(innerDiv);
 
     const flexDiv = document.createElement('div');
@@ -778,7 +778,7 @@ function createBookingUnit(container, units) {
     const img = document.createElement('img');
     img.src = 'https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room2.jpg';
     img.alt = '';
-    img.className = 'rounded-lg object-cover w-60';
+    img.className = 'rounded-lg object-cover w-60 h-44';
     flexDiv.appendChild(img);
 
     const infoDiv = document.createElement('div');
@@ -1385,7 +1385,7 @@ function fetchUserData(userRef, email, callback) {
 
 function createRooms(rooms, units) {
     const innerDiv = document.createElement('div');
-    innerDiv.className = 'my-2 p-3 border-2 border-black h-44 w-full rounded-lg relative';
+    innerDiv.className = 'my-2 p-3 border border-gray-300 shaodw-sm h-52 w-full rounded-lg relative';
     rooms.appendChild(innerDiv);
 
     const flexDiv = document.createElement('div');
@@ -1403,7 +1403,7 @@ function createRooms(rooms, units) {
         img.src = 'https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room.jpg';
     }
     img.alt = '';
-    img.className = 'rounded-lg object-cover w-60';
+    img.className = 'rounded-lg object-cover w-60 mt-1 h-44';
     flexDiv.appendChild(img);
 
     const infoDiv = document.createElement('div');
@@ -1732,7 +1732,7 @@ function createCarouselItem(item) {
 function createTableRow(row) {
     return `
         <tr class="bg-white text-sm font-light">
-            <td class="px-4 py-0 border-l-4 border-black">${row.accommodation}</td>
+            <td class="px-4 py-0 ">${row.accommodation}</td>
             <td class="px-4 py-0">${row.details}</td>
             <td class="px-4 py-0">${row.checkIn}</td>
             <td class="px-4 py-0">${row.checkOut}</td>
@@ -1821,10 +1821,10 @@ function createAccommodation(accommodation) {
             <div class="border border-gray-200 object-cover rounded-lg shadow">
                 <div class="p-4">
                     <a href="book.html">
-                        <img class="w-96 h-36 m-6 rounded-xl object-cover" src="${accommodation.src}" alt="product image" />
+                        <img class="w-96 h-36 rounded-xl object-cover" src="${accommodation.src}" alt="product image" />
                     </a>
                 </div>
-                <div class="px-6 mx-7 pb-5">
+                <div class="px-6 ml-0 mx-7 pb-5">
                     <a href="book.html">
                         <h5 class="text-lg font-medium tracking-tight text-gray-900">${accommodation.name}</h5>
                         <p class="text-sm font-light tracking-tight text-gray-600">${accommodation.location}</p>
