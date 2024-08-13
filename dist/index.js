@@ -1400,7 +1400,7 @@ function createRooms(rooms, units) {
     } else if (units.accommodationID === 'ACC003') {
         img.src = '/src/hotel-room4.jpg';
     } else if (units.accommodationID === 'ACC004'){
-        img.src = '/src/hotel-room.jpg';
+        img.src = 'https://github.com/VSUrhuel/vsu-accommodation-reservation-system/blob/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room.jpg';
     }
     img.alt = '';
     img.className = 'rounded-lg object-cover w-60';
