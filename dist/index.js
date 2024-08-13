@@ -776,7 +776,7 @@ function createBookingUnit(container, units) {
     innerDiv.appendChild(flexDiv);
 
     const img = document.createElement('img');
-    img.src = '/src/hotel-room2.jpg';
+    img.src = 'https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room2.jpg';
     img.alt = '';
     img.className = 'rounded-lg object-cover w-60';
     flexDiv.appendChild(img);
@@ -1394,13 +1394,13 @@ function createRooms(rooms, units) {
 
     const img = document.createElement('img');
     if (units.accommodationID == 'ACC001') {
-        img.src = '/src/hotel-room2.jpg';
+        img.src = 'https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room2.jpg';
     } else if (units.accommodationID === 'ACC002') {
-        img.src = '/src/hotel-room3.jpg';
+        img.src = 'https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room3.jpg';
     } else if (units.accommodationID === 'ACC003') {
-        img.src = '/src/hotel-room4.jpg';
+        img.src = 'https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room4.jpg';
     } else if (units.accommodationID === 'ACC004'){
-        img.src = 'https://github.com/VSUrhuel/vsu-accommodation-reservation-system/blob/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room.jpg';
+        img.src = 'https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room.jpg';
     }
     img.alt = '';
     img.className = 'rounded-lg object-cover w-60';
@@ -1700,11 +1700,11 @@ const navItems = [
 ];
 
 const carouselItems = [
-    { src: "/src/hotel-room.jpg", alt: "Hotel Room 1" },
-    { src: "/src/hotel-room2.jpg", alt: "Hotel Room 2", active: true },
-    { src: "/src/hotel-room3.jpg", alt: "Hotel Room 3" },
-    { src: "/src/hotel-room4.jpg", alt: "Hotel Room 4" },
-    { src: "/src/hotel-room5.jpg", alt: "Hotel Room 5" }
+    { src: "https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room.jpg", alt: "Hotel Room 1" },
+    { src: "https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room2.jpg", alt: "Hotel Room 2", active: true },
+    { src: "https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room3.jpg", alt: "Hotel Room 3" },
+    { src: "https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room4.jpg", alt: "Hotel Room 4" },
+    { src: "https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/hotel-room5.jpg", alt: "Hotel Room 5" }
 ];
 
 const tableContent = [
@@ -1756,7 +1756,7 @@ function createUserCard() {
     flexContainer.className = 'flex items-center gap-4 h-10';
 
     const userImg = document.createElement('img');
-    userImg.src = '/src/profile.png';
+    userImg.src = 'https://raw.githubusercontent.com/VSUrhuel/vsu-accommodation-reservation-system/de562e583e5cdc38cd11e1b418bf785e5e920a26/src/profile.png';
     userImg.alt = 'user';
     userImg.className = 'h-10 w-auto cursor-pointer';
     userImg.type = 'button';
